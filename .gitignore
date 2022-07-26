@@ -1,0 +1,10 @@
+# Binaries for programs and plugins
+main
+repl
+*.exe
+*.exe~
+*.so
+*.dylib
+*.dll
+vls.log
+*.code-workspace

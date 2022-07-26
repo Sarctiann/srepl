@@ -1,0 +1,26 @@
+Usage:
+    srepl [file] [flags,]
+
+Examples:
+    srepl
+    srepl file.v
+    srepl file.v -inc-main
+
+--------------------------------------------------------------------------------
+Sarctiann REPL is a reimplementation of vrepl
+Start a vlang repl with reading the given file.
+--------------------------------------------------------------------------------
+
+flags:
+    -inc-main   include fn main of the given file.
+
+commands:
+    cpfix-list          show accumulated program
+    cpfix-reset          reload file or clean accumulated program
+    cpfix-help          show this help
+    cpfix-clear          clean the screen
+    cpfix-quit          quit repl
+    cpfix-mode          alternate between "normal" and "overwrite" mode
+    cpfix-file          show current file name
+    cpfix-path          show current file path
+    cpfix-save          save accumulated program
