@@ -1,5 +1,7 @@
 module main
 
+import os
+
 const (
 	cpfix    = ':' // command prefix
 	commands = {
@@ -13,4 +15,5 @@ const (
 		'path':  'p' // show current file path
 		'save':  's' // save accumulated program
 	}
+	is_stdin_a_pipe = (os.is_atty(0) == 0)
 )

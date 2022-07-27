@@ -1,12 +1,15 @@
 module main
 
 import os
+import term
 import readline
 import os.cmdline
 
 struct Repl {
 mut:
 	readline readline.Readline
+	prompt   string = term.bright_blue('>>> ')
+	cur_line string
 }
 
 fn main() {
@@ -14,6 +17,7 @@ fn main() {
 
 	mut repl := new_repl(args)
 	repl.loop()
+	exit(0)
 }
 
 fn new_repl(args []string) Repl {
@@ -25,17 +29,23 @@ fn new_repl(args []string) Repl {
 }
 
 fn (mut r Repl) read() {
-	r.readline.read_line('>>> ') or { exit(0) }
+	r.cur_line = r.readline.read_line(r.prompt) or { 
+		println('')
+		exit(0)	
+	}
 }
 
 fn (mut r Repl) eval() {
 }
 
 fn (mut r Repl) print() {
+	print(r.cur_line)
 }
 
 fn (mut r Repl) loop() {
-	r.read()
-	r.eval()
-	r.print()
+	for {
+		r.read()
+		r.eval()
+		r.print()
+	}
 }
