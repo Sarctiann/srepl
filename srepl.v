@@ -12,7 +12,13 @@ mut:
 	prompt   string = '>>> '
 	pcolor   fn (string) string
 	cur_inln string
-	result   string
+	result   OptPrint
+}
+
+struct OptPrint {
+mut:
+	content      string
+	should_print bool
 }
 
 fn main() {
@@ -34,7 +40,6 @@ fn new_repl(args []string) Repl {
 			.normal { colors[.normal_prompt] }
 			.overwrite { colors[.overwrite_prompt] }
 		}
-		// result: OptPrint{}
 	}
 }
 
@@ -62,10 +67,13 @@ fn (mut repl Repl) eval() {
 			eprintln('Unknown command ${colors[.error](cmd)}')
 		}
 	} else {
-		repl.result = repl.cur_inln.trim_space()
+		repl.result.content = repl.cur_inln.trim_space()
 	}
 }
 
 fn (mut repl Repl) print() {
+	if repl.result.should_print {
 		println(repl.result)
+	}
+	repl.result.should_print = true
 }

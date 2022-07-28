@@ -15,7 +15,7 @@ fn show_help(mut repl Repl) {
 	for k, v in commands {
 		f_hf = f_hf.replace('-$k', '$k or $cpfix$v')
 	}
-	repl.result = f_hf
+	repl.result.content = f_hf
 }
 
 fn clear(mut repl Repl) {
