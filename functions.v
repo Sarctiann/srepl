@@ -3,37 +3,45 @@ module main
 import os
 import term
 
-fn list() {
+fn list(mut repl Repl) {
 }
 
-fn reset() {
+fn reset(mut repl Repl) {
 }
 
-fn show_help() {
+fn show_help(mut repl Repl) {
 	help_file := os.read_file('help.txt') or { panic('Missing Help File') }
 	mut f_hf := help_file.replace('cpfix', cpfix)
 	for k, v in commands {
-		f_hf = f_hf.replace('-$k', v)
+		f_hf = f_hf.replace('-$k', '$k or $cpfix$v')
 	}
-	println(f_hf)
+	repl.result = f_hf
 }
 
-fn clear() {
+fn clear(mut repl Repl) {
 	term.clear()
 }
 
-fn quit() {
+fn quit(mut repl Repl) {
 	exit(0)
 }
 
-fn mode() {
+fn mode(mut repl Repl) {
+	repl.mode = match repl.mode {
+		.normal { .overwrite }
+		.overwrite { .normal }
+	}
+	repl.pcolor = match repl.mode {
+		.normal { colors[.normal_prompt] }
+		.overwrite { colors[.overwrite_prompt] }
+	}
 }
 
-fn file() {
+fn file(mut repl Repl) {
 }
 
-fn path() {
+fn path(mut repl Repl) {
 }
 
-fn save() {
+fn save(mut repl Repl) {
 }
