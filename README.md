@@ -2,7 +2,7 @@
 
 ---
 
-### The objective of this project is to create a new replica for Vlang that meets the following features:
+### The objective of this project is to create a new REPL for Vlang that meets the following features:
 
 * [Colored Code Highlighting](#Colored-Code-Highlighting)
 * [Overwrite Mode](#Overwrite-Mode)
