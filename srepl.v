@@ -3,9 +3,11 @@ module main
 import os
 import readline
 import os.cmdline
+import term.ui as tui
 
 struct Repl {
 mut:
+	tui      &tui.Context = unsafe { 0 }
 	readline readline.Readline
 	indent   int
 	mode     Mode
@@ -67,13 +69,14 @@ fn (mut repl Repl) eval() {
 			eprintln('Unknown command ${colors[.error](cmd)}')
 		}
 	} else {
+		repl.result.should_print = true
 		repl.result.content = repl.cur_inln.trim_space()
 	}
 }
 
 fn (mut repl Repl) print() {
 	if repl.result.should_print {
-		println(repl.result)
+		println(repl.result.content)
 	}
 	repl.result.should_print = true
 }

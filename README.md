@@ -28,11 +28,11 @@ This is one of the most important goals of this repl. As you know vlang have an 
 
 ### Flexible Declarations
 
-Esto puede sonar similar a lo anterior, pero en realidad este punto se trata de brindar la capacidad de declarar constantes, estructuras, etc. en cualquier lugar de la sesión REPL. el objetivo es disminuir la necesidad de usar :reset y comenzar de nuevo. Sometime these quick tests are not so simple to just redo.
+This may sound similar to the above, but really this point is about providing the ability to declare constants, structures, etc. anywhere in the REPL session. the goal is to decrease the need to use :reset and start over. Sometimes these quick tests are not so simple to just redo.
 
 ### Suggestions
 
-Of course we need help finding the right function inside a module. or that strange name we gave to the method of our structure. At this point I have no idea how I should approach this challenge, but I know what I hope to achieve ( bpython 😉 ).
+Of course we need help finding the right function inside a module. or that strange name we gave to the method of our struct. At this point I have no idea how I should approach this challenge, but I know what I hope to achieve ( bpython 😉 ).
 
 ### Edit Accumulated Code
 
@@ -40,7 +40,7 @@ well, the idea here is to open the current backlog in some installed text editor
 
 ### Save Resulting Module
 
-Finally,... for now, we will be able to save this accumulated program, you may want to continue later.
+Finally, ...for now, we will be able to save this accumulated program, you may want to continue later.
 
 ---
 
