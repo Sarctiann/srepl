@@ -1,7 +1,6 @@
 module main
 
 import os
-import term
 
 fn list(mut repl Repl) {
 }
@@ -19,7 +18,7 @@ fn show_help(mut repl Repl) {
 }
 
 fn clear(mut repl Repl) {
-	term.clear()
+	repl.tui.clear()
 }
 
 fn quit(mut repl Repl) {

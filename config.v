@@ -54,4 +54,5 @@ const (
 		'save':            save
 		commands['save']:  save
 	}
+	frame_rate = 30
 )
