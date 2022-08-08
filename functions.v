@@ -3,101 +3,91 @@ module main
 import os
 import term.ui as tui
 
-fn event(e &tui.Event, x voidptr) {
-	mut repl := &Repl(x)
-	if e.typ == .key_down && e.code == .escape {
-		exit(0)
+fn read(e &tui.Event, x voidptr) {
+	mut r := &Repl(x)
+	if e.typ == .key_down {
+		match e.code {
+			.escape {
+				quit(mut r)
+			}
+			.up, .down {}
+			.left {
+				r.cursor_backward(1)
+			}
+			.right {
+				r.cursor_forward(1)
+			}
+			.backspace {
+				r.input_remove()
+			}
+			.delete {
+				r.input_delete()
+			}
+			.enter {
+				r.eval()
+			}
+			else {
+				r.input_insert(e.utf8)
+			}
+		}
 	} else {
-		repl.result.content += e.utf8
 	}
 }
 
 fn frame(x voidptr) {
-	mut repl := &Repl(x)
+	mut r := &Repl(x)
 
-	repl.tui.clear()
-	repl.tui.draw_text(0, 0, repl.pcolor(repl.prompt))
-	repl.tui.draw_text(5, 0, repl.result.content)
+	r.tui.clear()
 
-	repl.tui.reset()
-	repl.tui.flush()
+	r.tui.draw_text(1, 1, r.prompt.show())
+	r.tui.draw_text(r.prompt.offset(), 1, r.dataio.in_txt.string())
+	r.print()
+	r.set_cursor()
+
+	r.tui.reset()
+	r.tui.flush()
 }
 
-// fn (mut repl Repl) loop() {
-// 	for {
-// 		repl.read()
-// 		repl.eval()
-// 		repl.print()
-// 	}
-// }
-
-// fn (mut repl Repl) read() {
-// 	repl.cur_inln = repl.readline.read_line(repl.pcolor(repl.prompt)) or {
-// 		println('')
-// 		exit(0)
-// 	}
-// }
-
-// fn (mut repl Repl) eval() {
-// 	if repl.cur_inln.starts_with(cpfix) {
-// 		cmd := repl.cur_inln.trim(cpfix).trim_space()
-// 		if cmd in functions {
-// 			functions[cmd](mut repl)
-// 		} else {
-// 			eprintln('Unknown command ${colors[.error](cmd)}')
-// 		}
-// 	} else {
-// 		repl.result.should_print = true
-// 		repl.result.content = repl.cur_inln.trim_space()
-// 	}
-// }
-
-// fn (mut repl Repl) print() {
-// 	if repl.result.should_print {
-// 		println(repl.result.content)
-// 	}
-// 	repl.result.should_print = true
-// }
-
-fn list(mut repl Repl) {
+fn list(mut r Repl) {
 }
 
-fn reset(mut repl Repl) {
+fn reset(mut r Repl) {
 }
 
-fn show_help(mut repl Repl) {
+fn show_help(mut r Repl) {
 	help_file := os.read_file('help.txt') or { panic('Missing Help File') }
 	mut f_hf := help_file.replace('cpfix', cpfix)
 	for k, v in commands {
 		f_hf = f_hf.replace('-$k', '$k or $cpfix$v')
 	}
-	repl.result.content = f_hf
+	r.dataio.should_print = true
+	r.dataio.result = f_hf
 }
 
-fn clear(mut repl Repl) {
-	repl.tui.clear()
+fn clear(mut r Repl) {
+	r.tui.clear()
 }
 
-fn quit(mut repl Repl) {
+fn quit(mut r Repl) {
 	exit(0)
 }
 
-fn mode(mut repl Repl) {
-	repl.mode = match repl.mode {
+fn mode(mut r Repl) {
+	r.mode = match r.mode {
 		.normal { .overwrite }
 		.overwrite { .normal }
 	}
-	repl.pcolor = match repl.mode {
+	r.prompt.color = match r.mode {
 		.normal { colors[.normal_prompt] }
 		.overwrite { colors[.overwrite_prompt] }
 	}
 }
 
-fn file(mut repl Repl) {
+fn file(mut r Repl) {
 }
 
-fn path(mut repl Repl) {
+fn path(mut r Repl) {
 }
 
-fn save(mut repl Repl) {
+fn save(mut r Repl) {
 }

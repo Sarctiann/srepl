@@ -54,5 +54,6 @@ const (
 		'save':            save
 		commands['save']:  save
 	}
-	frame_rate = 30
+	frame_rate = 60
+	indent     = '\t'
 )
