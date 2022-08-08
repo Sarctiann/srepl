@@ -48,8 +48,6 @@ Finally, ...for now, we will be able to save this accumulated program, you may w
 
 * `os`
 * `os.cmdline`
-* `readline`
-* `term`
 * `term.ui`
 
 ---
