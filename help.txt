@@ -15,6 +15,7 @@ Start a vlang repl with reading the given file.
 flags:
     -inc-main        Include fn main of the given file.
     -ow              Initialize in overwrite mode.
+    -ft              Initialize with prompt fixed on top
 
 commands:
     cpfix-list      Show accumulated program.

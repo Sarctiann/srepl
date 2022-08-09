@@ -6,6 +6,7 @@
 
 * [Colored Code Highlighting](#Colored-Code-Highlighting)
 * [Overwrite Mode](#Overwrite-Mode)
+* [Fix Prompt on Top](#Fix-Prompt-on-Top)
 * [Flexible Declarations](#Flexible-Declarations)
 * [Suggestions](#Suggestions)
 * [Edit Accumulated Code](#Edit-Accumulated-Code)
@@ -25,6 +26,10 @@ Also I intend to delegate some UI information to colors. for example the color o
 ### Overwrite Mode
 
 This is one of the most important goals of this repl. As you know vlang have an especial operator for variable assignment ( `:=` ). And this variables are immutable by default. For that reason this is very inconvinient in some case when we want to make some tests. So in overwrite mode srepl should be capable to rewrite the variable assignment in its respective place.
+
+### Fix Prompt on Top
+
+This option allows you to fix the prompt on the top of the window
 
 ### Flexible Declarations
 

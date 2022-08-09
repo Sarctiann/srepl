@@ -83,6 +83,13 @@ fn mode(mut r Repl) {
 	}
 }
 
+fn fix_top(mut r Repl) {
+	r.fixed = match r.fixed {
+		true { false }
+		false { true }
+	}
+}
+
 fn file(mut r Repl) {
 }
 

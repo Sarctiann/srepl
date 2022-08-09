@@ -34,10 +34,14 @@ fn new_repl(args []string) &Repl {
 
 struct Repl {
 mut:
-	tui    &tui.Context = unsafe { 0 }
-	mode   Mode
-	prompt Prompt
-	dataio DataIO
+	tui       &tui.Context = unsafe { 0 }
+	mode      Mode
+	fixed     bool
+	in_linen  int
+	out_linen int
+	history   []string
+	prompt    Prompt
+	dataio    DataIO
 }
 
 fn (mut r Repl) input_insert(s string) {

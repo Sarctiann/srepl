@@ -23,6 +23,7 @@ const (
 		'quit':  'q' // quit repl
 		'exit':  'x' // quit repl
 		'mode':  'm' // alternate between normal and overwrite mode
+		'fixed': 't' // fix prompt on top
 		'file':  'f' // show current file name
 		'path':  'p' // show current file path
 		'save':  's' // save accumulated program
@@ -47,6 +48,8 @@ const (
 		commands['exit']:  quit
 		'mode':            mode
 		commands['mode']:  mode
+		'fixed':           fix_top
+		commands['fixed']: fix_top
 		'file':            file
 		commands['file']:  file
 		'path':            path
