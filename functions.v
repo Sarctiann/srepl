@@ -65,7 +65,7 @@ fn show_help(mut r Repl) {
 }
 
 fn clear(mut r Repl) {
-	r.tui.clear()
+	r.dataio.result = ''
 }
 
 fn quit(mut r Repl) {

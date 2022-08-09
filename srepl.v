@@ -83,6 +83,8 @@ fn (mut r Repl) eval() {
 		r.dataio.should_print = true
 		r.dataio.result = in_txt.trim_space()
 	}
+	r.cursor_backward(r.dataio.in_txt.len)
+	r.dataio.in_txt.clear()
 }
 
 fn (mut r Repl) print() {
