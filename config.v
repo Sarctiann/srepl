@@ -1,16 +1,25 @@
 module main
 
 import term
+import term.ui as termui
 
 enum Mode {
 	normal
 	overwrite
 }
 
-enum THC { // token highlighting color ...what do you think?
+enum THC { // token highlighting color ...what do you thought?
 	normal_prompt
 	overwrite_prompt
 	error
+	ui_bg_elem
+	ui_fg_text
+}
+
+enum Focus {
+	prompt
+	result
+	prog_list
 }
 
 const (
@@ -32,6 +41,18 @@ const (
 		THC.normal_prompt:    term.blue
 		THC.overwrite_prompt: term.magenta
 		THC.error:            term.red
+	}
+	custom_colors = {
+		THC.ui_bg_elem: termui.Color{
+			r: 90
+			g: 90
+			b: 90
+		}
+		THC.ui_fg_text: termui.Color{
+			r: 255
+			g: 255
+			b: 255
+		}
 	}
 	functions = {
 		'list':            list
