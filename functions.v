@@ -36,11 +36,17 @@ fn read(e &tui.Event, x voidptr) {
 
 fn frame(x voidptr) {
 	mut r := &Repl(x)
+	d := r.dataio
 
-	r.tui.clear()
+	r.check_w_h()
+	if r.should_redraw {
+		r.tui.clear()
+		r.should_redraw = false
+	}
 
+	r.draw_prog_list()
 	r.tui.draw_text(1, 1, r.prompt.show())
-	r.tui.draw_text(r.prompt.offset(), 1, r.dataio.in_txt.string())
+	r.tui.draw_text(r.prompt.offset(), d.in_lineno, d.in_txt.string())
 	r.print()
 	r.set_cursor()
 
@@ -65,7 +71,11 @@ fn show_help(mut r Repl) {
 }
 
 fn clear(mut r Repl) {
+	r.dataio.in_txt.clear()
 	r.dataio.result = ''
+	r.dataio.index = 0
+	r.dataio.in_lineno = 1
+	r.dataio.out_lineno = 2
 }
 
 fn quit(mut r Repl) {
