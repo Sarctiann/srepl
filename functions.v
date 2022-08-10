@@ -5,32 +5,49 @@ import term.ui as tui
 
 fn read(e &tui.Event, x voidptr) {
 	mut r := &Repl(x)
-	if e.typ == .key_down {
+	if e.modifiers == .shift {
 		match e.code {
-			.escape {
-				quit(mut r)
+			.up {
+				r.prev_focus()
 			}
-			.up, .down {}
-			.left {
-				r.cursor_backward(1)
+			.down {
+				r.next_focus()
 			}
-			.right {
-				r.cursor_forward(1)
-			}
-			.backspace {
-				r.input_remove()
-			}
-			.delete {
-				r.input_delete()
-			}
-			.enter {
-				r.eval()
-			}
-			else {
-				r.input_insert(e.utf8)
+			else {}
+		}
+	}
+	match r.focus {
+		.prompt {
+			if e.typ == .key_down {
+				match e.code {
+					.escape {
+						quit(mut r)
+					}
+					.up, .down {}
+					.left {
+						r.cursor_backward(1)
+					}
+					.right {
+						r.cursor_forward(1)
+					}
+					.backspace {
+						r.input_remove()
+					}
+					.delete {
+						r.input_delete()
+					}
+					.enter {
+						r.eval()
+					}
+					else {
+						r.input_insert(e.utf8)
+					}
+				}
+			} else {
 			}
 		}
-	} else {
+		.result {}
+		.prog_list {}
 	}
 }
 
@@ -43,9 +60,11 @@ fn frame(x voidptr) {
 		r.tui.clear()
 		r.should_redraw = false
 	}
-
+	
+	r.handle_message()
 	r.draw_prog_list()
-	r.tui.draw_text(1, 1, r.prompt.show())
+	r.draw_footer()
+	r.tui.draw_text(1, r.dataio.in_lineno, r.prompt.show())
 	r.tui.draw_text(r.prompt.offset(), d.in_lineno, d.in_txt.string())
 	r.print()
 	r.set_cursor()
@@ -94,9 +113,14 @@ fn mode(mut r Repl) {
 }
 
 fn fix_top(mut r Repl) {
-	r.fixed = match r.fixed {
-		true { false }
-		false { true }
+	match r.fixed {
+		true {
+			r.fixed = false
+		}
+		false {
+			r.fixed = true
+			clear(mut r)
+		}
 	}
 }
 

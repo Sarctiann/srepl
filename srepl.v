@@ -9,6 +9,11 @@ fn main() {
 
 	mut repl := new_repl(args)
 
+	repl.show_msg(
+		'Wellcome to Sarctiann REPL!, type :help for more information!',
+		3
+	)
+
 	repl.tui.run()?
 }
 
@@ -16,14 +21,18 @@ struct Repl {
 mut:
 	tui           &tui.Context = unsafe { 0 }
 	mode          Mode
+	focus         Focus
 	fixed         bool
 	should_redraw bool
 	history       []string
+	history_idx   int
 	prog_list     []string
 	w             int
 	h             int
 	prompt        &Prompt
 	dataio        &DataIO
+	msg           string
+	msg_hide_tick int
 }
 
 fn new_repl(args []string) &Repl {
@@ -31,6 +40,7 @@ fn new_repl(args []string) &Repl {
 	ini_fix_top := '-ft' in args
 	mut app := &Repl{
 		mode: ini_mode
+		focus: Focus.prompt
 		fixed: ini_fix_top
 		dataio: &DataIO{}
 		prompt: &Prompt{
@@ -39,6 +49,7 @@ fn new_repl(args []string) &Repl {
 				.overwrite { colors[.overwrite_prompt] }
 			}
 		}
+		history_idx: 0
 	}
 	app.tui = tui.init(
 		user_data: app
@@ -47,6 +58,34 @@ fn new_repl(args []string) &Repl {
 		frame_rate: frame_rate
 	)
 	return app
+}
+
+fn (mut r Repl) next_focus() {
+	r.focus = match r.focus {
+		.prompt {
+			Focus.result
+		}
+		.result {
+			if r.tui.window_width > 109 { Focus.prog_list } else { Focus.prompt }
+		}
+		.prog_list {
+			Focus.prompt
+		}
+	}
+}
+
+fn (mut r Repl) prev_focus() {
+	r.focus = match r.focus {
+		.prompt {
+			if r.tui.window_width > 109 { Focus.prog_list } else { Focus.result }
+		}
+		.result {
+			Focus.prompt
+		}
+		.prog_list {
+			Focus.result
+		}
+	}
 }
 
 fn (mut r Repl) input_insert(s string) {
@@ -90,6 +129,9 @@ fn (mut r Repl) check_w_h() {
 	if r.w != r.tui.window_width {
 		r.should_redraw = true
 		r.w = r.tui.window_width
+		if r.tui.window_width < 110 && r.focus == .prog_list {
+			r.focus == .prompt
+		}
 	}
 	if r.h != r.tui.window_height {
 		r.should_redraw = true
@@ -98,10 +140,29 @@ fn (mut r Repl) check_w_h() {
 }
 
 fn (mut r Repl) draw_prog_list() {
-	r.tui.set_bg_color(r: 90, g: 90, b: 90)
-	x := r.tui.window_width - 20
-	r.tui.draw_line(x, 1, x, r.tui.window_height)
-	r.tui.reset()
+	if r.tui.window_width > 109 {
+		r.tui.set_bg_color(custom_colors[.ui_bg_elem])
+		r.history_idx = r.tui.window_width - r.tui.window_width / 4 - 1
+		r.tui.draw_line(r.history_idx, 1, r.history_idx, r.tui.window_height)
+		r.tui.reset()
+	}
+}
+
+fn (mut r Repl) draw_footer() {
+	if r.tui.window_width > 99 && r.tui.window_height > 31 {
+		r.tui.set_bg_color(custom_colors[.ui_bg_elem])
+		r.tui.set_color(custom_colors[.ui_fg_text])
+		y := r.tui.window_height
+		mode := 'Mode: $r.mode'
+		focus := 'Focus on: $r.focus'
+		fixed := 'Fixed: $r.fixed'
+		lineno := 'Line No. in: $r.dataio.in_lineno out: $r.dataio.out_lineno'
+		status := '$mode | $focus | $fixed | $lineno'
+		x := (r.tui.window_width - status.len) / 2
+		r.tui.draw_line(1, y, r.tui.window_width, y)
+		r.tui.draw_text(x, y, status)
+		r.tui.reset()
+	}
 }
 
 fn (mut r Repl) eval() {
@@ -116,6 +177,7 @@ fn (mut r Repl) eval() {
 	} else {
 		r.dataio.should_print = true
 		r.dataio.result = in_txt.trim_space()
+		r.set_in_out_lineno()
 	}
 	r.cursor_backward(r.dataio.in_txt.len)
 	r.dataio.in_txt.clear()
@@ -127,6 +189,28 @@ fn (mut r Repl) print() {
 		r.tui.draw_text(1, r.dataio.out_lineno, r.dataio.result)
 	}
 	r.dataio.should_print = true
+}
+
+fn (mut r Repl) set_in_out_lineno() {
+	if !r.fixed {
+		r.dataio.out_lineno = r.dataio.in_lineno + 1
+		r.dataio.in_lineno += 2
+	}
+}
+
+fn (mut r Repl) show_msg(text string, time int) {
+	frames := time * frame_rate
+	r.msg_hide_tick = if time > 0 { int(r.tui.frame_count) + frames } else { -1 }
+	r.msg = text
+}
+
+fn (mut r Repl) handle_message() {
+	if r.msg != '' && r.tui.frame_count >= r.msg_hide_tick {
+		r.msg = ''
+	}
+	if r.msg != '' {
+		r.tui.draw_text(1, r.dataio.in_lineno + 1, colors[.message](r.msg))
+	}
 }
 
 struct Prompt {
