@@ -60,13 +60,10 @@ fn frame(x voidptr) {
 		r.tui.clear()
 		r.should_redraw = false
 	}
-	
-	if r.msg != '' && r.tui.frame_count >= r.msg_hide_tick {
-		r.msg = ''
-	}
-	r.tui.draw_text(r.prompt.offset(), d.out_lineno, r.msg)
 
+	r.handle_message()
 	r.draw_prog_list()
+	r.draw_footer()
 	r.tui.draw_text(1, r.dataio.in_lineno, r.prompt.show())
 	r.tui.draw_text(r.prompt.offset(), d.in_lineno, d.in_txt.string())
 	r.draw_footer()

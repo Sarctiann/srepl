@@ -9,6 +9,11 @@ fn main() {
 
 	mut repl := new_repl(args)
 
+	repl.show_msg(
+		'Wellcome to Sarctiann REPL!, type :help for more information!',
+		3
+	)
+
 	repl.tui.run()?
 }
 
@@ -188,8 +193,8 @@ fn (mut r Repl) print() {
 
 fn (mut r Repl) set_in_out_lineno() {
 	if !r.fixed {
-		r.dataio.in_lineno += 2
 		r.dataio.out_lineno = r.dataio.in_lineno + 1
+		r.dataio.in_lineno += 2
 	}
 }
 
@@ -197,6 +202,15 @@ fn (mut r Repl) show_msg(text string, time int) {
 	frames := time * frame_rate
 	r.msg_hide_tick = if time > 0 { int(r.tui.frame_count) + frames } else { -1 }
 	r.msg = text
+}
+
+fn (mut r Repl) handle_message() {
+	if r.msg != '' && r.tui.frame_count >= r.msg_hide_tick {
+		r.msg = ''
+	}
+	if r.msg != '' {
+		r.tui.draw_text(1, r.dataio.in_lineno + 1, colors[.message](r.msg))
+	}
 }
 
 struct Prompt {

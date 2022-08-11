@@ -1,5 +1,6 @@
 module main
 
+import os
 import term
 import term.ui as termui
 
@@ -12,6 +13,7 @@ enum THC { // token highlighting color ...what do you thought?
 	normal_prompt
 	overwrite_prompt
 	error
+	message
 	ui_bg_elem
 	ui_fg_text
 }
@@ -41,6 +43,7 @@ const (
 		THC.normal_prompt:    term.blue
 		THC.overwrite_prompt: term.magenta
 		THC.error:            term.red
+		THC.message:          term.cyan
 	}
 	custom_colors = {
 		THC.ui_bg_elem: termui.Color{
@@ -80,4 +83,5 @@ const (
 	}
 	frame_rate = 60
 	indent     = '\t'
+	temp_dir   = os.temp_dir()
 )
