@@ -1,21 +1,6 @@
 module main
 
-import os
-import os.cmdline
 import term.ui as tui
-
-fn main() {
-	args := cmdline.options_after(os.args, ['./srepl', 'srepl'])
-
-	mut repl := new_repl(args)
-
-	repl.show_msg(
-		'Wellcome to Sarctiann REPL!, type :help for more information!',
-		3
-	)
-
-	repl.tui.run()?
-}
 
 struct Repl {
 mut:
@@ -24,40 +9,13 @@ mut:
 	focus         Focus
 	fixed         bool
 	should_redraw bool
-	history       []string
-	history_idx   int
-	prog_list     []string
 	w             int
 	h             int
+	side_bar_pos  int
 	prompt        &Prompt
 	dataio        &DataIO
-	msg           string
-	msg_hide_tick int
-}
-
-fn new_repl(args []string) &Repl {
-	ini_mode := if '-ow' in args { Mode.overwrite } else { Mode.normal }
-	ini_fix_top := '-ft' in args
-	mut app := &Repl{
-		mode: ini_mode
-		focus: Focus.prompt
-		fixed: ini_fix_top
-		dataio: &DataIO{}
-		prompt: &Prompt{
-			color: match ini_mode {
-				.normal { colors[.normal_prompt] }
-				.overwrite { colors[.overwrite_prompt] }
-			}
-		}
-		history_idx: 0
-	}
-	app.tui = tui.init(
-		user_data: app
-		event_fn: read
-		frame_fn: frame
-		frame_rate: frame_rate
-	)
-	return app
+	databuff      &DataBuff
+	msg           &Msg
 }
 
 fn (mut r Repl) next_focus() {
@@ -142,8 +100,8 @@ fn (mut r Repl) check_w_h() {
 fn (mut r Repl) draw_prog_list() {
 	if r.tui.window_width > 109 {
 		r.tui.set_bg_color(custom_colors[.ui_bg_elem])
-		r.history_idx = r.tui.window_width - r.tui.window_width / 4 - 1
-		r.tui.draw_line(r.history_idx, 1, r.history_idx, r.tui.window_height)
+		r.side_bar_pos = r.tui.window_width - r.tui.window_width / 4 - 1
+		r.tui.draw_line(r.side_bar_pos, 1, r.side_bar_pos, r.tui.window_height)
 		r.tui.reset()
 	}
 }
@@ -198,42 +156,17 @@ fn (mut r Repl) set_in_out_lineno() {
 	}
 }
 
+fn (mut r Repl) handle_message() {
+	if r.msg.content != '' && r.tui.frame_count >= r.msg.msg_hide_tick {
+		r.msg.content = ''
+	}
+	if r.msg.content != '' {
+		r.tui.draw_text(1, r.dataio.in_lineno + 1, colors[.message](r.msg.content))
+	}
+}
+
 fn (mut r Repl) show_msg(text string, time int) {
 	frames := time * frame_rate
-	r.msg_hide_tick = if time > 0 { int(r.tui.frame_count) + frames } else { -1 }
-	r.msg = text
-}
-
-fn (mut r Repl) handle_message() {
-	if r.msg != '' && r.tui.frame_count >= r.msg_hide_tick {
-		r.msg = ''
-	}
-	if r.msg != '' {
-		r.tui.draw_text(1, r.dataio.in_lineno + 1, colors[.message](r.msg))
-	}
-}
-
-struct Prompt {
-mut:
-	prompt string = '>>>'
-	color  fn (string) string
-}
-
-fn (p &Prompt) show() string {
-	return p.color(p.prompt)
-}
-
-fn (p &Prompt) offset() int {
-	return p.prompt.len + 2
-}
-
-struct DataIO {
-mut:
-	in_txt       []rune
-	result       string
-	index        int
-	indent_level int
-	in_lineno    int  = 1
-	out_lineno   int  = 2
-	should_print bool = true
+	r.msg.msg_hide_tick = if time > 0 { int(r.tui.frame_count) + frames } else { -1 }
+	r.msg.content = text
 }
