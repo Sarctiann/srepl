@@ -15,6 +15,7 @@ mut:
 	prompt        &Prompt
 	dataio        &DataIO
 	databuff      &DataBuff
+	filesio       &FilesIO
 	msg           &Msg
 }
 
