@@ -33,6 +33,12 @@ mut:
 	prog_lineno int = 1
 }
 
+struct FilesIO {
+mut:
+	srepl_folder string
+	files        map[string]string{}
+}
+
 struct Msg {
 mut:
 	content       string

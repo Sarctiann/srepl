@@ -27,6 +27,7 @@ fn new_repl(args []string) &Repl {
 		}
 		dataio: &DataIO{}
 		databuff: &DataBuff{}
+		filesio: &FilesIO{}
 		msg: &Msg{
 			content: 'Wellcome to SREPL!, type :help for more information!'
 			msg_hide_tick: 3 * frame_rate
