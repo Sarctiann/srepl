@@ -163,7 +163,17 @@ fn (mut r Repl) handle_message() {
 		r.should_redraw = true
 	}
 	if r.msg.content != '' {
-		r.tui.draw_text(1, r.dataio.in_lineno + 1, colors[.message](r.msg.content))
+		pos_x := if debug {
+			r.dataio.in_lineno
+		} else {
+			r.dataio.in_lineno + 1
+		}
+		pos_y := if debug {
+			r.side_bar_pos - 'redraw on frame $r.tui.frame_count'.len - 1 
+		} else {
+			1
+		}
+		r.tui.draw_text(pos_y, pos_x, colors[.message](r.msg.content))
 	}
 }
 

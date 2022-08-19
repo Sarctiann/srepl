@@ -84,4 +84,5 @@ const (
 	frame_rate = 60
 	indent     = '\t'
 	temp_dir   = os.temp_dir()
+	debug = '-debug' in os.args
 )

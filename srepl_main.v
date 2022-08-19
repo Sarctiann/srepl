@@ -106,7 +106,9 @@ fn frame(app voidptr) {
 
 	if r.should_redraw {
 		r.tui.clear()
-		// r.show_msg('redraw $r.tui.frame_count', 1)
+		if debug {
+			r.show_msg('redraw on frame $r.tui.frame_count', 1)
+		}
 		r.draw_prog_list()
 		r.draw_footer()
 		r.should_redraw = false
