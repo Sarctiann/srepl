@@ -86,15 +86,15 @@ fn (mut r Repl) set_cursor() {
 
 fn (mut r Repl) check_w_h() {
 	if r.w != r.tui.window_width {
-		r.should_redraw = true
 		r.w = r.tui.window_width
 		if r.tui.window_width < 110 && r.focus == .prog_list {
 			r.focus == .prompt
 		}
+		r.should_redraw = true
 	}
 	if r.h != r.tui.window_height {
+		r.h = r.tui.window_height
 		r.should_redraw = true
-		r.w = r.tui.window_height
 	}
 }
 
@@ -160,9 +160,20 @@ fn (mut r Repl) set_in_out_lineno() {
 fn (mut r Repl) handle_message() {
 	if r.msg.content != '' && r.tui.frame_count >= r.msg.msg_hide_tick {
 		r.msg.content = ''
+		r.should_redraw = true
 	}
 	if r.msg.content != '' {
-		r.tui.draw_text(1, r.dataio.in_lineno + 1, colors[.message](r.msg.content))
+		pos_x := if debug {
+			r.dataio.in_lineno
+		} else {
+			r.dataio.in_lineno + 1
+		}
+		pos_y := if debug {
+			r.side_bar_pos - 'redraw on frame $r.tui.frame_count'.len - 1 
+		} else {
+			1
+		}
+		r.tui.draw_text(pos_y, pos_x, colors[.message](r.msg.content))
 	}
 }
 

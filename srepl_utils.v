@@ -36,7 +36,7 @@ mut:
 struct FilesIO {
 mut:
 	srepl_folder string
-	files        map[string]string{}
+	files        map[string]string
 }
 
 struct Msg {
