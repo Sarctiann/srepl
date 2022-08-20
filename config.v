@@ -13,7 +13,9 @@ enum THC { // token highlighting color ...what do you thought?
 	normal_prompt
 	overwrite_prompt
 	error
-	message
+	msg_info
+	msg_warn
+	msg_error
 	ui_bg_elem
 	ui_fg_text
 }
@@ -43,7 +45,9 @@ const (
 		THC.normal_prompt:    term.blue
 		THC.overwrite_prompt: term.magenta
 		THC.error:            term.red
-		THC.message:          term.cyan
+		THC.msg_info:         term.cyan
+		THC.msg_warn:         term.yellow
+		THC.msg_error:        term.red
 	}
 	custom_colors = {
 		THC.ui_bg_elem: termui.Color{
@@ -84,5 +88,5 @@ const (
 	frame_rate = 60
 	indent     = '\t'
 	temp_dir   = os.temp_dir()
-	debug = '-debug' in os.args
+	debug      = '-debug' in os.args
 )

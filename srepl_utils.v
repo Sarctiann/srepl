@@ -42,5 +42,6 @@ mut:
 struct Msg {
 mut:
 	content       string
+	color		  THC
 	msg_hide_tick int
 }

@@ -53,17 +53,19 @@ fn (mut r Repl) input_insert(s string) {
 }
 
 fn (mut r Repl) input_remove() {
-	if r.dataio.index > 0 {
-		r.dataio.index--
-		r.dataio.in_txt.delete(r.dataio.index)
-		r.should_redraw = true
+	mut d := r.dataio
+	if d.index > 0 {
+		r.tui.draw_text(r.prompt.offset(), d.in_lineno, ' '.repeat(d.in_txt.len))
+		d.index--
+		d.in_txt.delete(d.index)
 	}
 }
 
 fn (mut r Repl) input_delete() {
-	if r.dataio.index < r.dataio.in_txt.len {
-		r.dataio.in_txt.delete(r.dataio.index)
-		r.should_redraw = true
+	mut d := r.dataio
+	if d.index < d.in_txt.len {
+		r.tui.draw_text(r.prompt.offset(), d.in_lineno, ' '.repeat(d.in_txt.len))
+		d.in_txt.delete(d.index)
 	}
 }
 
@@ -85,17 +87,16 @@ fn (mut r Repl) set_cursor() {
 }
 
 fn (mut r Repl) check_w_h() {
-	if r.w != r.tui.window_width {
+	if r.w != r.tui.window_width || r.h != r.tui.window_height {
 		r.w = r.tui.window_width
+		r.h = r.tui.window_height
 		if r.tui.window_width < 110 && r.focus == .prog_list {
 			r.focus == .prompt
 		}
-		r.should_redraw = true
+		r.should_redraw = true // FIXME
 	}
-	if r.h != r.tui.window_height {
-		r.h = r.tui.window_height
-		r.should_redraw = true
-	}
+	r.draw_prog_list()
+	r.draw_footer()
 }
 
 fn (mut r Repl) draw_prog_list() {
@@ -125,22 +126,22 @@ fn (mut r Repl) draw_footer() {
 }
 
 fn (mut r Repl) eval() {
-	in_txt := r.dataio.in_txt.string()
+	mut d := r.dataio
+	in_txt := d.in_txt.string()
 	if in_txt.starts_with(cpfix) {
 		cmd := in_txt.trim(cpfix).trim_space()
 		if cmd in functions {
 			functions[cmd](mut r)
 		} else {
-			r.dataio.result = 'Unknown command ${colors[.error](cmd)}'
+			d.result = 'Unknown command ${colors[.error](cmd)}'
 		}
 	} else {
-		r.dataio.should_print = true
-		r.dataio.result = in_txt.trim_space()
-		r.set_in_out_lineno()
+		d.result = in_txt.trim_space()
 	}
-	r.cursor_backward(r.dataio.in_txt.len)
-	r.dataio.in_txt.clear()
-	r.should_redraw = true
+	r.set_in_out_lineno()
+	r.tui.draw_text(r.prompt.offset(), d.in_lineno, ' '.repeat(d.in_txt.len))
+	r.cursor_backward(d.in_txt.len)
+	d.in_txt.clear()
 }
 
 fn (mut r Repl) print() {
@@ -151,34 +152,42 @@ fn (mut r Repl) print() {
 }
 
 fn (mut r Repl) set_in_out_lineno() {
-	if !r.fixed {
-		r.dataio.out_lineno = r.dataio.in_lineno + 1
-		r.dataio.in_lineno += 2
+	if r.fixed {
+		r.dataio.in_lineno = 1
+		r.dataio.out_lineno = 2
+	} else {
+		if r.dataio.should_print {
+			in_lines_len := r.dataio.in_txt.filter(it == `\n`).len + 1
+			out_lines_len := r.dataio.result.count('\n') + 1
+			r.dataio.out_lineno = r.dataio.in_lineno + in_lines_len
+			r.dataio.in_lineno = r.dataio.out_lineno + out_lines_len
+		}
 	}
 }
 
 fn (mut r Repl) handle_message() {
+	pos_x := if debug {
+		r.dataio.in_lineno
+	} else {
+		r.dataio.in_lineno + 1
+	}
+	pos_y := if debug {
+		r.side_bar_pos - 'redraw on frame $r.tui.frame_count'.len - 1 
+	} else {
+		1
+	}
 	if r.msg.content != '' && r.tui.frame_count >= r.msg.msg_hide_tick {
+		r.tui.draw_text(pos_y, pos_x, ' '.repeat(r.msg.content.len))
 		r.msg.content = ''
-		r.should_redraw = true
 	}
 	if r.msg.content != '' {
-		pos_x := if debug {
-			r.dataio.in_lineno
-		} else {
-			r.dataio.in_lineno + 1
-		}
-		pos_y := if debug {
-			r.side_bar_pos - 'redraw on frame $r.tui.frame_count'.len - 1 
-		} else {
-			1
-		}
-		r.tui.draw_text(pos_y, pos_x, colors[.message](r.msg.content))
+		r.tui.draw_text(pos_y, pos_x, colors[r.msg.color](r.msg.content))
 	}
 }
 
-fn (mut r Repl) show_msg(text string, time int) {
+fn (mut r Repl) show_msg(text string, color THC, time int) {
 	frames := time * frame_rate
 	r.msg.msg_hide_tick = if time > 0 { int(r.tui.frame_count) + frames } else { -1 }
 	r.msg.content = text
+	r.msg.color = color
 }

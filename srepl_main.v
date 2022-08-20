@@ -37,6 +37,7 @@ fn new_repl(args []string) &Repl {
 		}
 		msg: &Msg{
 			content: 'Wellcome to SREPL!, type :help for more information!'
+			color: THC.msg_info
 			msg_hide_tick: 3 * frame_rate
 		}
 	}
@@ -101,18 +102,16 @@ fn frame(app voidptr) {
 	mut r := &Repl(app)
 	d := r.dataio
 
-	r.check_w_h()
-	r.handle_message()
-
 	if r.should_redraw {
 		r.tui.clear()
 		if debug {
-			r.show_msg('redraw on frame $r.tui.frame_count', 1)
+			r.show_msg('redraw on frame $r.tui.frame_count', .msg_info, 1)
 		}
-		r.draw_prog_list()
-		r.draw_footer()
 		r.should_redraw = false
 	}
+
+	r.handle_message()
+	r.check_w_h()
 
 	r.tui.draw_text(1, r.dataio.in_lineno, r.prompt.show())
 	r.tui.draw_text(r.prompt.offset(), d.in_lineno, d.in_txt.string())
