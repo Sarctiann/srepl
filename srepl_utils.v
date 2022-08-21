@@ -25,6 +25,10 @@ mut:
 	should_print bool = true
 }
 
+fn (d DataIO) colored_in() string {
+	return highlight_input(d.in_txt.string())
+}
+
 struct DataBuff {
 mut:
 	history     []string

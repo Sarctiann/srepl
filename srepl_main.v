@@ -114,7 +114,7 @@ fn frame(app voidptr) {
 	r.check_w_h()
 
 	r.tui.draw_text(1, r.dataio.in_lineno, r.prompt.show())
-	r.tui.draw_text(r.prompt.offset(), d.in_lineno, d.in_txt.string())
+	r.tui.draw_text(r.prompt.offset(), d.in_lineno, d.colored_in())
 
 	r.print()
 	r.set_cursor()

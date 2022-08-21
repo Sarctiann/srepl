@@ -127,13 +127,15 @@ fn (mut r Repl) draw_footer() {
 
 fn (mut r Repl) eval() {
 	mut d := r.dataio
+	// handle existing message before moving cursor
+	r.tui.draw_text(1, r.dataio.in_lineno + 1, ' '.repeat(r.msg.content.len))
 	in_txt := d.in_txt.string()
 	if in_txt.starts_with(cpfix) {
 		cmd := in_txt.trim(cpfix).trim_space()
 		if cmd in functions {
 			functions[cmd](mut r)
 		} else {
-			d.result = 'Unknown command ${colors[.error](cmd)}'
+			d.result = 'Unknown command ${colors[.msg_error](cmd)}'
 		}
 	} else {
 		d.result = in_txt.trim_space()
@@ -165,6 +167,7 @@ fn (mut r Repl) set_in_out_lineno() {
 	}
 }
 
+// FIXME on Enter pressed
 fn (mut r Repl) handle_message() {
 	pos_x := if debug {
 		r.dataio.in_lineno
