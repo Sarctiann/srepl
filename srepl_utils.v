@@ -26,7 +26,11 @@ mut:
 }
 
 fn (d DataIO) colored_in() string {
-	return highlight_input(d.in_txt.string())
+	if d.in_txt.len > 0 {
+		return highlight_input(d.in_txt.string())
+	} else {
+		return ''
+	}
 }
 
 struct DataBuff {
@@ -46,6 +50,6 @@ mut:
 struct Msg {
 mut:
 	content       string
-	color		  THC
+	color         THC
 	msg_hide_tick int
 }

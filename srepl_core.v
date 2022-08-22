@@ -4,7 +4,7 @@ import term.ui as tui
 
 struct Repl {
 mut:
-	tui           &tui.Context = unsafe { 0 }
+	tui           &tui.Context = unsafe { nil }
 	mode          Mode
 	focus         Focus
 	fixed         bool
@@ -175,7 +175,7 @@ fn (mut r Repl) handle_message() {
 		r.dataio.in_lineno + 1
 	}
 	pos_y := if debug {
-		r.side_bar_pos - 'redraw on frame $r.tui.frame_count'.len - 1 
+		r.side_bar_pos - 'redraw on frame $r.tui.frame_count'.len - 1
 	} else {
 		1
 	}

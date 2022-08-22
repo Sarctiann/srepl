@@ -6,7 +6,6 @@ import os.cmdline
 import term.ui as tui
 
 fn main() {
-	defer { println('hola') }
 	args := cmdline.options_after(os.args, ['./srepl', 'srepl'])
 
 	mut repl := new_repl(args)
@@ -30,7 +29,7 @@ fn new_repl(args []string) &Repl {
 		dataio: &DataIO{}
 		databuff: &DataBuff{}
 		filesio: &FilesIO{
-			srepl_folder: 'srepl-${rand.ulid()}'
+			srepl_folder: 'srepl-$rand.ulid()'
 			files: {
 				'main': 'main.v'
 			}
@@ -50,7 +49,7 @@ fn new_repl(args []string) &Repl {
 	return app
 }
 
-fn read(e &tui.Event, app voidptr) {
+fn read(e &tui.Event, app nil) {
 	mut r := &Repl(app)
 	if e.modifiers == .shift {
 		match e.code {
@@ -98,7 +97,7 @@ fn read(e &tui.Event, app voidptr) {
 	}
 }
 
-fn frame(app voidptr) {
+fn frame(app nil) {
 	mut r := &Repl(app)
 	d := r.dataio
 

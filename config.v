@@ -24,13 +24,13 @@ const (
 		THC.overwrite_prompt: term.magenta
 		THC.msg_info:         term.cyan
 		THC.msg_warn:         term.yellow
-		THC.msg_error:        term.red
-		THC.repl_fn:          term.yellow
-		THC.keyword:          term.magenta
+		THC.msg_error:        term.bright_red
+		THC.repl_fn:          term.bright_green
+		THC.keyword:          term.bright_magenta
 		THC.operator:         term.red
 		THC.parentesis:       term.blue
-		THC._type:            term.cyan
-		THC.modifier:         term.bright_blue
+		THC._type:            term.bright_cyan
+		THC.modifier:         term.magenta
 		THC.assign:           term.bright_yellow
 		THC.number:           term.yellow
 		THC._string:          term.green
