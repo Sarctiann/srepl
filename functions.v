@@ -22,7 +22,7 @@ fn clear(mut r Repl) {
 	r.should_redraw = true
 	r.dataio.in_txt.clear()
 	r.dataio.result = ''
-	r.dataio.index = 0
+	r.dataio.in_offset = 0
 	r.dataio.in_lineno = -1
 	r.dataio.out_lineno = 0
 }

@@ -18,7 +18,7 @@ fn (p &Prompt) offset() int {
 struct DataIO {
 mut:
 	in_txt       []rune
-	index        int
+	in_offset    int // in_offset must be always <= 0
 	in_lineno    int = 1
 	result       string
 	out_lineno   int  = 2

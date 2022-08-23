@@ -49,7 +49,7 @@ fn new_repl(args []string) &Repl {
 	return app
 }
 
-fn read(e &tui.Event, app nil) {
+fn read(e &tui.Event, app voidptr) {
 	mut r := &Repl(app)
 	if e.modifiers == .shift {
 		match e.code {
@@ -97,7 +97,7 @@ fn read(e &tui.Event, app nil) {
 	}
 }
 
-fn frame(app nil) {
+fn frame(app voidptr) {
 	mut r := &Repl(app)
 	d := r.dataio
 
@@ -112,7 +112,7 @@ fn frame(app nil) {
 	r.handle_message()
 	r.check_w_h()
 
-	r.tui.draw_text(1, r.dataio.in_lineno, r.prompt.show())
+	r.tui.draw_text(1, d.in_lineno, r.prompt.show())
 	r.tui.draw_text(r.prompt.offset(), d.in_lineno, d.colored_in())
 
 	r.print()

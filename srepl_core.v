@@ -48,42 +48,44 @@ fn (mut r Repl) prev_focus() {
 }
 
 fn (mut r Repl) input_insert(s string) {
-	r.dataio.in_txt.insert(r.dataio.index, s.runes())
-	r.dataio.index++
+	mut d := r.dataio
+	d.in_txt.insert(d.in_txt.len + d.in_offset, s.runes())
 }
 
 fn (mut r Repl) input_remove() {
 	mut d := r.dataio
-	if d.index > 0 {
+	if d.in_offset > 0 - d.in_txt.len {
 		r.tui.draw_text(r.prompt.offset(), d.in_lineno, ' '.repeat(d.in_txt.len))
-		d.index--
-		d.in_txt.delete(d.index)
+		d.in_txt.delete(d.in_txt.len + d.in_offset - 1)
 	}
 }
 
 fn (mut r Repl) input_delete() {
 	mut d := r.dataio
-	if d.index < d.in_txt.len {
+	if d.in_offset < 0 {
 		r.tui.draw_text(r.prompt.offset(), d.in_lineno, ' '.repeat(d.in_txt.len))
-		d.in_txt.delete(d.index)
+		d.in_txt.delete(d.in_txt.len + d.in_offset)
+		d.in_offset++
 	}
 }
 
 fn (mut r Repl) cursor_backward(i int) {
-	if r.dataio.index > 0 {
-		r.dataio.index -= i
+	mut d := r.dataio
+	if d.in_offset > 0 - d.in_txt.len {
+		d.in_offset -= i
 	}
 }
 
 fn (mut r Repl) cursor_forward(i int) {
-	if r.dataio.index < r.dataio.in_txt.len {
-		r.dataio.index += i
+	mut d := r.dataio
+	if d.in_offset < 0 {
+		d.in_offset += i
 	}
 }
 
 fn (mut r Repl) set_cursor() {
 	d := r.dataio
-	r.tui.set_cursor_position(r.prompt.offset() + d.index, d.in_lineno)
+	r.tui.set_cursor_position(r.prompt.offset() + d.in_txt.len + d.in_offset, d.in_lineno)
 }
 
 fn (mut r Repl) check_w_h() {
@@ -142,7 +144,7 @@ fn (mut r Repl) eval() {
 	}
 	r.set_in_out_lineno()
 	r.tui.draw_text(r.prompt.offset(), d.in_lineno, ' '.repeat(d.in_txt.len))
-	r.cursor_backward(d.in_txt.len)
+	d.in_offset = 0
 	d.in_txt.clear()
 }
 
