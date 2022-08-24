@@ -48,8 +48,10 @@ fn (mut r Repl) eval() {
 			r.should_print = true
 		}
 	} else {
-		todo := colors[.msg_error](' EVAL ENGINE NOT IMPLEMENTED YET')
-		d.result = in_txt.trim_space() + todo
+		if in_txt.trim_space() != '' {
+			todo := colors[.msg_error](' EVAL ENGINE NOT IMPLEMENTED YET')
+			d.result = in_txt.trim_space() + todo
+		}
 		r.should_print = true
 	}
 	r.set_in_out_lineno()
