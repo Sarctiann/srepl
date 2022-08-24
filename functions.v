@@ -3,9 +3,13 @@ module main
 import os
 
 fn list(mut r Repl) {
+	r.dataio.result = colors[.msg_error]('Not implemented yet')
+	r.should_print = true
 }
 
 fn reset(mut r Repl) {
+	r.dataio.result = colors[.msg_error]('Not implemented yet')
+	r.should_print = true
 }
 
 fn show_help(mut r Repl) {
@@ -14,25 +18,26 @@ fn show_help(mut r Repl) {
 	for k, v in commands {
 		f_hf = f_hf.replace('-$k', '$k or $cpfix$v')
 	}
-	r.dataio.should_print = true
 	r.dataio.result = f_hf
+	r.should_print = true
 }
 
 fn clear(mut r Repl) {
-	r.should_redraw = true
+	r.tui.clear()
 	r.dataio.in_txt.clear()
 	r.dataio.result = ''
 	r.dataio.in_offset = 0
-	r.dataio.in_lineno = -1
-	r.dataio.out_lineno = 0
+	r.dataio.in_lineno = 1
+	r.dataio.out_lineno = 2
 }
 
 fn quit(mut r Repl) {
+	println('')
 	exit(0)
 }
 
 fn mode(mut r Repl) {
-	r.dataio.should_print = false
+	r.should_print = false
 	match r.mode {
 		.normal {
 			r.mode = .overwrite
@@ -63,10 +68,16 @@ fn fix_top(mut r Repl) {
 }
 
 fn file(mut r Repl) {
+	r.dataio.result = colors[.msg_error]('Not implemented yet')
+	r.should_print = true
 }
 
 fn path(mut r Repl) {
+	r.dataio.result = colors[.msg_error]('Not implemented yet')
+	r.should_print = true
 }
 
 fn save(mut r Repl) {
+	r.dataio.result = colors[.msg_error]('Not implemented yet')
+	r.should_print = true
 }

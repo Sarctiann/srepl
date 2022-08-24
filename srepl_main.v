@@ -42,14 +42,14 @@ fn new_repl(args []string) &Repl {
 	}
 	app.tui = tui.init(
 		user_data: app
-		event_fn: read
-		frame_fn: frame
+		event_fn: handle_events
+		frame_fn: each_frame
 		frame_rate: frame_rate
 	)
 	return app
 }
 
-fn read(e &tui.Event, app voidptr) {
+fn handle_events(e &tui.Event, app voidptr) {
 	mut r := &Repl(app)
 	if e.modifiers == .shift {
 		match e.code {
@@ -97,27 +97,20 @@ fn read(e &tui.Event, app voidptr) {
 	}
 }
 
-fn frame(app voidptr) {
+fn each_frame(app voidptr) {
 	mut r := &Repl(app)
-	d := r.dataio
 
-	if r.should_redraw {
-		r.tui.clear()
-		if debug {
-			r.show_msg('redraw on frame $r.tui.frame_count', .msg_info, 1)
-		}
-		r.should_redraw = false
+	r.on_cycle_start()
+
+	r.read()
+
+	if r.should_eval {
+		r.eval()
 	}
 
-	r.handle_message()
-	r.check_w_h()
+	if r.should_print {
+		r.print()
+	}
 
-	r.tui.draw_text(1, d.in_lineno, r.prompt.show())
-	r.tui.draw_text(r.prompt.offset(), d.in_lineno, d.colored_in())
-
-	r.print()
-	r.set_cursor()
-
-	r.tui.reset()
-	r.tui.flush()
+	r.on_cycle_end()
 }

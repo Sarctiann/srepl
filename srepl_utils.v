@@ -17,12 +17,11 @@ fn (p &Prompt) offset() int {
 
 struct DataIO {
 mut:
-	in_txt       []rune
-	in_offset    int // in_offset must be always <= 0
-	in_lineno    int = 1
-	result       string
-	out_lineno   int  = 2
-	should_print bool = true
+	in_txt     []rune
+	in_offset  int // in_offset must be always <= 0
+	in_lineno  int = 1
+	result     string
+	out_lineno int = 2
 }
 
 fn (d DataIO) colored_in() string {
