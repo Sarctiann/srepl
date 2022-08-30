@@ -102,7 +102,6 @@ enum THC { // token highlighting color ...what do you thought?
 }
 
 enum Focus {
-	prompt
-	result
+	text_area
 	prog_list
 }

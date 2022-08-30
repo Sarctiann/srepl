@@ -17,28 +17,31 @@ fn new_repl(args []string) &Repl {
 	ini_mode := if '-ow' in args { Mode.overwrite } else { Mode.normal }
 	ini_fix_top := '-ft' in args
 	mut app := &Repl{
-		mode: ini_mode
-		focus: Focus.prompt
-		fixed: ini_fix_top
-		prompt: &Prompt{
-			color: match ini_mode {
-				.normal { colors[.normal_prompt] }
-				.overwrite { colors[.overwrite_prompt] }
-			}
-		}
-		dataio: &DataIO{}
-		databuff: &DataBuff{}
-		filesio: &FilesIO{
+		// size: &WinSize{}
+		focus: Focus.text_area
+		repl_data: &ReplData{
 			srepl_folder: 'srepl-$rand.ulid()'
 			files: {
 				'main': 'main.v'
 			}
 		}
-		msg: &Msg{
-			content: 'Wellcome to SREPL!, type :help for more information!'
-			color: THC.msg_info
+		text_area: &ScrollableTA{
+			prompt: &Prompt{
+				prompt: '>>>'
+				mode: ini_mode
+				color: match ini_mode {
+					.normal { THC.normal_prompt }
+					.overwrite { THC.overwrite_prompt }
+				}
+			}
+			fixed: ini_fix_top
+		}
+		bg_info: &BGInfo{
+			msg_text: 'Wellcome to SREPL!, type :help for more information!'
+			msg_color: THC.msg_info
 			msg_hide_tick: 3 * frame_rate
 		}
+		prog_list: &ProgList{}
 	}
 	app.tui = tui.init(
 		user_data: app
@@ -46,6 +49,10 @@ fn new_repl(args []string) &Repl {
 		frame_fn: each_frame
 		frame_rate: frame_rate
 	)
+	app.size = WinSize{
+		width: &app.tui.window_width
+		height: &app.tui.window_height
+	}
 	return app
 }
 
@@ -53,17 +60,14 @@ fn handle_events(e &tui.Event, app voidptr) {
 	mut r := &Repl(app)
 	if e.modifiers == .shift {
 		match e.code {
-			.up {
-				r.prev_focus()
-			}
-			.down {
-				r.next_focus()
+			.up, .down {
+				// r.change_focus()
 			}
 			else {}
 		}
 	}
 	match r.focus {
-		.prompt {
+		.text_area {
 			if e.typ == .key_down {
 				match e.code {
 					.escape {
@@ -71,28 +75,27 @@ fn handle_events(e &tui.Event, app voidptr) {
 					}
 					.up, .down {}
 					.left {
-						r.cursor_backward(1)
+						// r.text_area.cursor_backward(1)
 					}
 					.right {
-						r.cursor_forward(1)
+						// r.text_area.cursor_forward(1)
 					}
 					.backspace {
-						r.input_remove()
+						// r.text_area.input_remove(mut r)
 					}
 					.delete {
-						r.input_delete()
+						// r.text_area.input_delete(mut r)
 					}
 					.enter {
-						r.eval()
+						// r.should_eval = true
 					}
 					else {
-						r.input_insert(e.utf8)
+						// r.text_area.input_insert(e.utf8)
 					}
 				}
 			} else {
 			}
 		}
-		.result {}
 		.prog_list {}
 	}
 }
@@ -101,16 +104,8 @@ fn each_frame(app voidptr) {
 	mut r := &Repl(app)
 
 	r.on_cycle_start()
-
 	r.read()
-
-	if r.should_eval {
-		r.eval()
-	}
-
-	if r.should_print {
-		r.print()
-	}
-
+	r.eval()
+	r.print()
 	r.on_cycle_end()
 }

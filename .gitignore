@@ -1,10 +1,10 @@
 # Binaries for programs and plugins
 main
 srepl
+vls.log
 *.exe
 *.exe~
 *.so
 *.dylib
 *.dll
-vls.log
 *.code-workspace
