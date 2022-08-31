@@ -20,56 +20,56 @@ const (
 		'save':  's' // save accumulated program
 	}
 	colors = {
-		THC.normal_prompt:    term.blue
-		THC.overwrite_prompt: term.magenta
-		THC.msg_info:         term.cyan
-		THC.msg_warn:         term.yellow
-		THC.msg_error:        term.bright_red
-		THC.repl_fn:          term.bright_green
-		THC.keyword:          term.bright_magenta
-		THC.operator:         term.red
-		THC.parentesis:       term.blue
-		THC._type:            term.bright_cyan
-		THC.modifier:         term.magenta
-		THC.assign:           term.bright_yellow
-		THC.number:           term.yellow
-		THC._string:          term.green
+		THC.normal_prompt:    &term.blue
+		THC.overwrite_prompt: &term.magenta
+		THC.msg_info:         &term.cyan
+		THC.msg_warn:         &term.yellow
+		THC.msg_error:        &term.bright_red
+		THC.repl_fn:          &term.bright_green
+		THC.keyword:          &term.bright_magenta
+		THC.operator:         &term.red
+		THC.parentesis:       &term.blue
+		THC._type:            &term.bright_cyan
+		THC.modifier:         &term.magenta
+		THC.assign:           &term.bright_yellow
+		THC.number:           &term.yellow
+		THC._string:          &term.green
 	}
 	custom_colors = {
-		THC.ui_bg_elem: termui.Color{
+		THC.ui_bg_elem: &termui.Color{
 			r: 90
 			g: 90
 			b: 90
 		}
-		THC.ui_fg_text: termui.Color{
+		THC.ui_fg_text: &termui.Color{
 			r: 255
 			g: 255
 			b: 255
 		}
 	}
 	functions = {
-		'list':            list
-		commands['list']:  list
-		'reset':           reset
-		commands['reset']: reset
-		'help':            show_help
-		commands['help']:  show_help
-		'clear':           clear
-		commands['clear']: clear
-		'quit':            quit
-		commands['quit']:  quit
-		'exit':            quit
-		commands['exit']:  quit
-		'mode':            mode
-		commands['mode']:  mode
-		'fixed':           fix_top
-		commands['fixed']: fix_top
-		'file':            file
-		commands['file']:  file
-		'path':            path
-		commands['path']:  path
-		'save':            save
-		commands['save']:  save
+		'list':            &list
+		commands['list']:  &list
+		'reset':           &reset
+		commands['reset']: &reset
+		'help':            &show_help
+		commands['help']:  &show_help
+		'clear':           &clear
+		commands['clear']: &clear
+		'quit':            &quit
+		commands['quit']:  &quit
+		'exit':            &quit
+		commands['exit']:  &quit
+		'mode':            &mode
+		commands['mode']:  &mode
+		'fixed':           &fix_top
+		commands['fixed']: &fix_top
+		'file':            &file
+		commands['file']:  &file
+		'path':            &path
+		commands['path']:  &path
+		'save':            &save
+		commands['save']:  &save
 	}
 	frame_rate = 60
 	indent     = '\t'

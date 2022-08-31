@@ -25,17 +25,6 @@ fn new_repl(args []string) &Repl {
 				'main': 'main.v'
 			}
 		}
-		text_area: &ScrollableTA{
-			prompt: &Prompt{
-				prompt: '>>>'
-				mode: ini_mode
-				color: match ini_mode {
-					.normal { THC.normal_prompt }
-					.overwrite { THC.overwrite_prompt }
-				}
-			}
-			fixed: ini_fix_top
-		}
 		bg_info: &BGInfo{
 			msg_text: 'Wellcome to SREPL!, type :help for more information!'
 			msg_color: THC.msg_info
@@ -50,8 +39,20 @@ fn new_repl(args []string) &Repl {
 		frame_rate: frame_rate
 	)
 	app.size = WinSize{
-		width: &app.tui.window_width
-		height: &app.tui.window_height
+		new_w: &app.tui.window_width
+		new_h: &app.tui.window_height
+	}
+	app.text_area = &ScrollableTA{
+		prompt: &Prompt{
+			prompt: '>>>'
+			mode: ini_mode
+			color: match ini_mode {
+				.normal { THC.normal_prompt }
+				.overwrite { THC.overwrite_prompt }
+			}
+		}
+		fixed: ini_fix_top
+		tui_draw: unsafe { app.tui.draw_text }
 	}
 	return app
 }

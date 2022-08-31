@@ -10,9 +10,9 @@ mut:
 	focus        Focus
 	repl_data    &ReplData
 	// views
-	text_area    &ScrollableTA
-	bg_info      &BGInfo
-	prog_list    &ProgList
+	text_area    ScrollableTA
+	bg_info      BGInfo
+	prog_list    ProgList
 	// helpers
 	should_eval  bool
 	should_print bool

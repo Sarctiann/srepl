@@ -2,20 +2,23 @@ module main
 
 struct WinSize {
 mut:
-	width  &int
-	height &int
+	width  int
+	height int
+	new_w  &int
+	new_h  &int
 }
 
-// fn (mut ws WinSize) is_size_changed(r Repl) bool {
-// 	if ws.width != r.tui.window_width || ws.height != r.tui.window_height {
-// 		ws.width = r.tui.window_width
-// 		ws.height = r.tui.window_height
-// 		return true
-// 	}
-// 	return false
-// }
+fn (mut ws WinSize) is_size_changed() bool {
+	if ws.width != ws.new_w || ws.height != ws.new_h {
+		ws.width = ws.new_w
+		ws.height = ws.new_h
+		return true
+	}
+	return false
+}
 
 struct ScrollableTA {
+	tui_draw      fn(int, int, string)
 mut:
 	prompt    &Prompt
 	fixed     bool
