@@ -2,7 +2,7 @@ module main
 
 import os
 import term
-import term.ui as termui
+import term.ui as tui
 
 const (
 	cpfix    = ':' // command prefix
@@ -36,12 +36,12 @@ const (
 		THC._string:          &term.green
 	}
 	custom_colors = {
-		THC.ui_bg_elem: &termui.Color{
+		THC.ui_bg_elem: &tui.Color{
 			r: 90
 			g: 90
 			b: 90
 		}
-		THC.ui_fg_text: &termui.Color{
+		THC.ui_fg_text: &tui.Color{
 			r: 255
 			g: 255
 			b: 255
@@ -71,7 +71,7 @@ const (
 		'save':            &save
 		commands['save']:  &save
 	}
-	frame_rate = 60
+	frame_rate = 30
 	indent     = '\t'
 	temp_dir   = os.temp_dir()
 	debug      = '-debug' in os.args
@@ -104,4 +104,10 @@ enum THC { // token highlighting color ...what do you thought?
 enum Focus {
 	text_area
 	prog_list
+}
+
+enum Action {
+	read
+	eval
+	print
 }

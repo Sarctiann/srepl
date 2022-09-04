@@ -17,20 +17,26 @@ fn new_repl(args []string) &Repl {
 	ini_mode := if '-ow' in args { Mode.overwrite } else { Mode.normal }
 	ini_fix_top := '-ft' in args
 	mut app := &Repl{
-		// size: &WinSize{}
-		focus: Focus.text_area
+		text_area: &TextArea{
+			prompt: &Prompt{
+				prompt: '>>>'
+				mode: ini_mode
+				color: match ini_mode {
+					.normal { THC.normal_prompt }
+					.overwrite { THC.overwrite_prompt }
+				}
+			}
+			fixed: ini_fix_top
+		}
+		prog_list: &ProgList{}
 		repl_data: &ReplData{
 			srepl_folder: 'srepl-$rand.ulid()'
 			files: {
 				'main': 'main.v'
 			}
 		}
-		bg_info: &BGInfo{
-			msg_text: 'Wellcome to SREPL!, type :help for more information!'
-			msg_color: THC.msg_info
-			msg_hide_tick: 3 * frame_rate
-		}
-		prog_list: &ProgList{}
+		focus: Focus.text_area
+		action: .read
 	}
 	app.tui = tui.init(
 		user_data: app
@@ -38,21 +44,23 @@ fn new_repl(args []string) &Repl {
 		frame_fn: each_frame
 		frame_rate: frame_rate
 	)
-	app.size = WinSize{
-		new_w: &app.tui.window_width
-		new_h: &app.tui.window_height
+	app.bg_info = &BGInfo{
+		frame_count: &app.tui.frame_count
+		msg_text: 'Wellcome to SREPL!, type :help for more information!'
+		msg_color: THC.msg_info
+		msg_hide_tick: 3 * frame_rate
 	}
-	app.text_area = &ScrollableTA{
-		prompt: &Prompt{
-			prompt: '>>>'
-			mode: ini_mode
-			color: match ini_mode {
-				.normal { THC.normal_prompt }
-				.overwrite { THC.overwrite_prompt }
-			}
+	app.drawer = ViewDrawer{
+		draw_text: unsafe { app.tui.draw_text }
+		draw_line: unsafe { app.tui.draw_line }
+		set_cur_pos: unsafe { app.tui.set_cursor_position }
+		size: &WinSize{
+			new_w: &app.tui.window_width
+			new_h: &app.tui.window_height
 		}
-		fixed: ini_fix_top
-		tui_draw: unsafe { app.tui.draw_text }
+		text_area: app.text_area
+		prog_list: app.prog_list
+		bg_info: &app.bg_info
 	}
 	return app
 }
@@ -62,7 +70,7 @@ fn handle_events(e &tui.Event, app voidptr) {
 	if e.modifiers == .shift {
 		match e.code {
 			.up, .down {
-				// r.change_focus()
+				r.change_focus()
 			}
 			else {}
 		}
@@ -76,25 +84,27 @@ fn handle_events(e &tui.Event, app voidptr) {
 					}
 					.up, .down {}
 					.left {
-						// r.text_area.cursor_backward(1)
+						r.text_area.cursor_backward(1)
 					}
 					.right {
-						// r.text_area.cursor_forward(1)
+						r.text_area.cursor_forward(1)
 					}
 					.backspace {
-						// r.text_area.input_remove(mut r)
+						r.text_area.input_remove()
 					}
 					.delete {
-						// r.text_area.input_delete(mut r)
+						r.text_area.input_delete()
 					}
 					.enter {
-						// r.should_eval = true
+						r.drawer.out_text << r.text_area.colored_in()
+						r.action = .eval
 					}
 					else {
-						// r.text_area.input_insert(e.utf8)
+						r.text_area.input_insert(e.utf8)
 					}
 				}
 			} else {
+				// TODO: handle mouse events
 			}
 		}
 		.prog_list {}
