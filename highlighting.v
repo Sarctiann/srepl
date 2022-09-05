@@ -102,7 +102,7 @@ fn highlight_input(in_text string) string {
 	} else {
 		// First we need to replace the numbers and brackets in one go,
 		// since these characters are used in the terminal colorization.
-		mut re_number := re.regex_opt(r'([0-9\[\]\.])') or { panic(error) }
+		mut re_number := re.regex_opt(r'([0-9\[\]\.]+)') or { panic(error) }
 		first_epoch := re_number.replace_by_fn(in_text, colored_number)
 
 		// Now we split the text in words to replace the word level tokens
