@@ -2,9 +2,7 @@
 
 ### IN PROGRESS:
 
-* re-implement data structure
-* reorganize footer data
-* reorganize ui-drawing function
+* centralize drawing per frame
 * implement EVAL engine (maybe using v interpreter...)
 * implement scroll system
 * implement program list

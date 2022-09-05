@@ -54,6 +54,8 @@ fn new_repl(args []string) &Repl {
 		draw_text: unsafe { app.tui.draw_text }
 		draw_line: unsafe { app.tui.draw_line }
 		set_cur_pos: unsafe { app.tui.set_cursor_position }
+		set_bg_color: unsafe { app.tui.set_bg_color }
+		set_color: unsafe { app.tui.set_color }
 		size: &WinSize{
 			new_w: &app.tui.window_width
 			new_h: &app.tui.window_height
@@ -61,6 +63,7 @@ fn new_repl(args []string) &Repl {
 		text_area: app.text_area
 		prog_list: app.prog_list
 		bg_info: &app.bg_info
+		focus: &app.focus
 	}
 	return app
 }
@@ -96,7 +99,7 @@ fn handle_events(e &tui.Event, app voidptr) {
 						r.text_area.input_delete()
 					}
 					.enter {
-						r.drawer.out_text << r.text_area.colored_in()
+						r.drawer.puts(r.text_area.colored_in())
 						r.action = .eval
 					}
 					else {

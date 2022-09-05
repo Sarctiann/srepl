@@ -16,7 +16,7 @@ mut:
 
 fn (mut r Repl) on_cycle_start() {
 	r.tui.clear()
-	r.drawer.size.handle_change_size()
+	r.drawer.handle_change_size()
 	r.bg_info.handle_msg()
 }
 
