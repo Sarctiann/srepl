@@ -35,7 +35,7 @@ fn (mut vd ViewDrawer) draw() {
 
 	// draw output
 	for i, line in vd.out_text {
-		if line.len > sbp {
+		if !line.contains('>>>') && !line.contains('...') && line.len > sbp {
 			vd.out_text[i] = line[..sbp]
 			vd.out_text.insert(i + 1, line[sbp..])
 		}
@@ -46,11 +46,11 @@ fn (mut vd ViewDrawer) draw() {
 	// draw input text
 	vd.draw_text(1, vd.in_linen, ta.colored_in())
 
+	// draw program list
+
 	// draw bg ui and footer
 	vd.draw_ui_bg()
 	vd.draw_ui_content()
-
-	// draw program list
 
 	// set cursor
 	in_index := ta.prompt.prompt.len + 2 + ta.in_text.len - ta.in_offset

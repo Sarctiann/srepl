@@ -3,7 +3,7 @@ module main
 import regex as re
 
 const (
-	word_level_tokens = {
+	word_level1_tokens = {
 		'as':        THC.keyword
 		'asm':       THC.keyword
 		'assert':    THC.keyword
@@ -49,26 +49,28 @@ const (
 		'static':    THC.keyword
 		'volatile':  THC.keyword
 		'unsafe':    THC.keyword
-		'it':        THC.modifier
-		'a':         THC.modifier
-		'b':         THC.modifier
-		'mut':       THC.modifier
-		'pub':       THC.modifier
-		'any':       THC._type
-		'bool':      THC._type
-		'i8':        THC._type
-		'i16':       THC._type
-		'int':       THC._type
-		'i64':       THC._type
-		'u8':        THC._type
-		'u16':       THC._type
-		'u32':       THC._type
-		'u64':       THC._type
-		'f32':       THC._type
-		'f64':       THC._type
-		'string':    THC._type
-		'rune':      THC._type
-		'voidptr':   THC._type
+	}
+	word_level2_tokens = {
+		'it':      THC.modifier
+		'a':       THC.modifier
+		'b':       THC.modifier
+		'mut':     THC.modifier
+		'pub':     THC.modifier
+		'any':     THC._type
+		'bool':    THC._type
+		'i8':      THC._type
+		'i16':     THC._type
+		'int':     THC._type
+		'i64':     THC._type
+		'u8':      THC._type
+		'u16':     THC._type
+		'u32':     THC._type
+		'u64':     THC._type
+		'f32':     THC._type
+		'f64':     THC._type
+		'string':  THC._type
+		'rune':    THC._type
+		'voidptr': THC._type
 	}
 	// Order matters, by precedence last will result in higher priority
 	char_level_tokens = {
@@ -105,14 +107,32 @@ fn highlight_input(in_text string) string {
 		mut re_number := re.regex_opt(r'([0-9\[\]\.]+)') or { panic(error) }
 		first_epoch := re_number.replace_by_fn(in_text, colored_number)
 
-		// Now we split the text in words to replace the word level tokens
+		// Now we split the text in words to replace the word level 1 tokens
 		mut second_epoch := first_epoch.split(' ')
-		second_epoch = second_epoch.map(if it in word_level_tokens {
-			t := word_level_tokens[it]
+		second_epoch = second_epoch.map(if it in word_level1_tokens {
+			t := word_level1_tokens[it]
 			colors[t](it)
 		} else {
 			it
 		})
+
+		// Now we split the text in words to replace the word level 2 tokens
+		// for words that can be sticked to certain tokens
+		// handle tokens between [ ]
+		sep_query := r'[\.,;\(\)\{\}m]'
+		mut re_word_sep := re.regex_opt(sep_query) or { panic(error) }
+		for i, word in second_epoch {
+			mut toks := re_word_sep.split(word).filter(it.len > 0)
+			if toks.len > 0 {
+				for tok in toks {
+					if tok in word_level2_tokens {
+						t := word_level2_tokens[tok]
+						colored := second_epoch[i].replace(tok, colors[t](tok))
+						second_epoch[i] = colored
+					}
+				}
+			}
+		}
 
 		// Now we join them into a string and replace the char level tokens
 		mut third_epoch := second_epoch.join(' ')
@@ -130,7 +150,7 @@ fn highlight_input(in_text string) string {
 
 fn colored_number(re re.RE, text string, start int, end int) string {
 	g := re.get_group_by_id(text, 0)
-	color := if g in ['[', ']'] { THC.parentesis } else { THC.number }
+	color := if g in ['[', ']', '[]'] { THC.parentesis } else { THC.number }
 	return colors[color](g)
 }
 
