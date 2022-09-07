@@ -15,8 +15,8 @@ fn reset(mut r Repl) {
 }
 
 fn show_help(mut r Repl) {
-	help_file := os.read_file('help.txt') or { panic('Missing Help File') }
-	mut f_hf := help_file.replace('cpfix', cpfix)
+	help := os.read_file(help_file) or { panic('Missing Help File') }
+	mut f_hf := help.replace('cpfix', cpfix)
 	for k, v in commands {
 		f_hf = f_hf.replace('-$k', '$k or $cpfix$v')
 	}

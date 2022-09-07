@@ -71,11 +71,12 @@ const (
 		'save':            &save
 		commands['save']:  &save
 	}
-	u_arrow    = '\u22C0'
-	d_arrow    = '\u22C1'
+	u_arrow    = '\u2227'
+	d_arrow    = '\u2228'
 	frame_rate = 30
 	indent     = '\t'
 	temp_dir   = os.temp_dir()
+	help_file  = './src/help.txt'
 	debug      = '-debug' in os.args
 )
 
