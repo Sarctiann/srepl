@@ -115,4 +115,3 @@ mut:
 	new_w  &int
 	new_h  &int
 }
-

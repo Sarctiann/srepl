@@ -71,6 +71,8 @@ const (
 		'save':            &save
 		commands['save']:  &save
 	}
+	u_arrow    = '\u22C0'
+	d_arrow    = '\u22C1'
 	frame_rate = 30
 	indent     = '\t'
 	temp_dir   = os.temp_dir()

@@ -70,13 +70,24 @@ fn new_repl(args []string) &Repl {
 
 fn handle_events(e &tui.Event, app voidptr) {
 	mut r := &Repl(app)
-	if e.modifiers == .shift {
-		match e.code {
-			.up, .down {
-				r.change_focus()
+	match e.modifiers {
+		.ctrl {
+			match e.code {
+				.up, .down {
+					r.change_focus()
+				}
+				else {}
 			}
-			else {}
 		}
+		.shift {
+			match e.code {
+				.up, .down {
+					// TODO: handle scroll
+				}
+				else {}
+			}
+		}
+		.alt {}
 	}
 	match r.focus {
 		.text_area {

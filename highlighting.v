@@ -49,11 +49,11 @@ const (
 		'static':    THC.keyword
 		'volatile':  THC.keyword
 		'unsafe':    THC.keyword
+		'it':        THC.modifier
+		'a':         THC.modifier
+		'b':         THC.modifier
 	}
 	word_level2_tokens = {
-		'it':      THC.modifier
-		'a':       THC.modifier
-		'b':       THC.modifier
 		'mut':     THC.modifier
 		'pub':     THC.modifier
 		'any':     THC._type
@@ -116,10 +116,10 @@ fn highlight_input(in_text string) string {
 			it
 		})
 
-		// Now we split the text in words to replace the word level 2 tokens
+		// Now split the text in words to replace the word level 2 tokens
 		// for words that can be sticked to certain tokens
 		// handle tokens between [ ]
-		sep_query := r'[\.,;\(\)\{\}m]'
+		sep_query := r'[\.,;:\(\)\{\}m]'
 		mut re_word_sep := re.regex_opt(sep_query) or { panic(error) }
 		for i, word in second_epoch {
 			mut toks := re_word_sep.split(word).filter(it.len > 0)
@@ -134,16 +134,17 @@ fn highlight_input(in_text string) string {
 			}
 		}
 
-		// Now we join them into a string and replace the char level tokens
+		// Now join them into a string and replace the char level tokens
 		mut third_epoch := second_epoch.join(' ')
 		for k, v in char_level_tokens {
 			third_epoch = third_epoch.replace(k, colors[v](k))
 		}
 
-		// Finally we replace the literal strings
+		// Finally replace the literal strings
 		mut re_string := re.regex_opt('(["\'].*["\'])') or { panic(error) }
 		fourth_epoch := re_string.replace_by_fn(third_epoch, colored_string)
 
+		// TODO: highlight comments
 		return fourth_epoch
 	}
 }

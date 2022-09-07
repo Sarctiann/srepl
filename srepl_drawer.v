@@ -1,13 +1,13 @@
 module main
 
-import term.ui { Color }
+import term.ui
 
 struct ViewDrawer {
 	draw_text    fn (int, int, string)
 	draw_line    fn (int, int, int, int)
 	set_cur_pos  fn (int, int)
-	set_bg_color fn (c Color)
-	set_color    fn (c Color)
+	set_bg_color fn (ui.Color)
+	set_color    fn (ui.Color)
 mut:
 	size      &WinSize
 	text_area &TextArea
@@ -40,13 +40,33 @@ fn (mut vd ViewDrawer) draw() {
 			vd.out_text.insert(i + 1, line[sbp..])
 		}
 	}
-	output := vd.out_text.join('\n')
+	output := match vd.text_area.fixed {
+		false {
+			// 2 = 1 for the footer + 1 for new prompt
+			// TODO: improve for multiline prompt
+			if vd.out_text.len > vd.size.height - 2 {
+				// TODO: handle slice with scroll system
+				vd.out_text[vd.out_text.len - vd.size.height + 2..].join('\n')
+			} else {
+				vd.out_text.join('\n')
+			}
+		}
+		// same as above
+		true {
+			if vd.out_text.len > vd.size.height - 2 {
+				vd.out_text[..vd.size.height - 2].join('\n')
+			} else {
+				vd.out_text.join('\n')
+			}
+		}
+	}
 	vd.draw_text(1, vd.out_linen, output)
 
 	// draw input text
 	vd.draw_text(1, vd.in_linen, ta.colored_in())
 
 	// draw program list
+	// TODO when "evaluation" is implemented
 
 	// draw bg ui and footer
 	vd.draw_ui_bg()
@@ -69,16 +89,20 @@ fn (vd &ViewDrawer) draw_ui_bg() {
 
 fn (vd &ViewDrawer) draw_ui_content() {
 	if vd.size.width > 109 {
+		sb_pos := vd.bg_info.scrollbar_pos
 		mode := 'mode: $vd.text_area.prompt.mode'
 		focus := 'focus: $vd.focus'
 		fixed := 'fixed: $vd.text_area.fixed'
 		lineno := 'in: $vd.in_linen out: $vd.out_linen'
 		out_len := 'buff lines: $vd.out_text.len'
-		sbp := 'sbp: $vd.bg_info.scrollbar_pos'
+		sbp := 'sbp: $sb_pos'
 		in_len := 'in len: $vd.text_area.colored_in().len'
 		status := '$mode | $focus | $fixed | $lineno | $out_len | $sbp | $in_len'
 		x := (vd.size.width - status.len) / 2
 		vd.draw_text(x, vd.size.height, status)
+		// draw scroll indicators
+		vd.draw_text(sb_pos, 1, u_arrow)
+		vd.draw_text(sb_pos, vd.size.height - 1, d_arrow)
 	}
 }
 
@@ -87,7 +111,11 @@ fn (mut vd ViewDrawer) set_in_out_linen() {
 		vd.in_linen = 1
 		vd.out_linen = 2
 	} else {
-		vd.in_linen = vd.out_text.len + 1
+		if vd.out_text.len + 1 < vd.size.height {
+			vd.in_linen = vd.out_text.len + 1
+		} else {
+			vd.in_linen = vd.size.height - 1
+		}
 	}
 }
 
