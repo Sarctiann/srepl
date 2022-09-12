@@ -25,12 +25,6 @@ fn (mut vd ViewDrawer) draw() {
 	bgi := vd.bg_info
 	sbp := bgi.scrollbar_pos
 
-	// draw bg_info.msg
-	if bgi.msg_text != '' {
-		msg := colors[bgi.msg_color](bgi.msg_text)
-		vd.draw_text(1, vd.in_linen + 1, msg)
-	}
-
 	// set line position before join output lines
 	vd.set_in_out_linen()
 
@@ -69,6 +63,12 @@ fn (mut vd ViewDrawer) draw() {
 
 	// draw input text
 	vd.draw_text(1, vd.in_linen, ta.colored_in())
+
+	// draw bg_info.msg
+	if bgi.msg_text != '' {
+		msg := colors[bgi.msg_color](bgi.msg_text)
+		vd.draw_text(1, vd.in_linen + 1, msg)
+	}
 
 	// draw program list
 	// TODO: when "evaluation" is implemented
