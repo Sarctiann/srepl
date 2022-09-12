@@ -28,3 +28,7 @@ commands:
     cpfix-file      Show current file name.
     cpfix-path      Show current file path.
     cpfix-save      Save accumulated program.
+
+key bindings:
+    SHIFT UP/DOWN    to scroll up and down the output
+    SHIFT LEFT/RIGHT to switch between prompt or prog list focus

@@ -1,13 +1,13 @@
 # QUICK TASK GUIDE
 
+---
+
 ### IN PROGRESS:
 
-* centralize drawing per frame
-* implement EVAL engine (maybe using v interpreter...)
-* implement scroll system
+* #### implement EVAL engine (maybe using v interpreter...)
+* implement secondary functions (to show file and path)
 * implement program list
 * implement reset repl
-* implement secondary functions (to show file and path)
 * implement save
 
 

@@ -9,14 +9,15 @@ struct ViewDrawer {
 	set_bg_color fn (ui.Color)
 	set_color    fn (ui.Color)
 mut:
-	size      &WinSize
-	text_area &TextArea
-	prog_list &ProgList
-	bg_info   &BGInfo
-	focus     &Focus
-	out_text  []string
-	in_linen  int = 1
-	out_linen int = 1
+	size       &WinSize
+	text_area  &TextArea
+	prog_list  &ProgList
+	bg_info    &BGInfo
+	focus      &Focus
+	out_text   []string
+	out_offset int
+	in_linen   int = 1
+	out_linen  int = 1
 }
 
 fn (mut vd ViewDrawer) draw() {
@@ -46,7 +47,9 @@ fn (mut vd ViewDrawer) draw() {
 			// TODO: improve for multiline prompt
 			if vd.out_text.len > vd.size.height - 2 {
 				// TODO: handle slice with scroll system
-				vd.out_text[vd.out_text.len - vd.size.height + 2..].join('\n')
+				start := vd.out_text.len - vd.size.height + 2 - vd.out_offset
+				end := vd.out_text.len - vd.out_offset
+				vd.out_text[start..end].join('\n')
 			} else {
 				vd.out_text.join('\n')
 			}
@@ -54,7 +57,9 @@ fn (mut vd ViewDrawer) draw() {
 		// same as above
 		true {
 			if vd.out_text.len > vd.size.height - 2 {
-				vd.out_text[..vd.size.height - 2].join('\n')
+				start := vd.out_offset
+				end := vd.size.height - 2 + vd.out_offset
+				vd.out_text[start..end].join('\n')
 			} else {
 				vd.out_text.join('\n')
 			}
@@ -66,13 +71,14 @@ fn (mut vd ViewDrawer) draw() {
 	vd.draw_text(1, vd.in_linen, ta.colored_in())
 
 	// draw program list
-	// TODO when "evaluation" is implemented
+	// TODO: when "evaluation" is implemented
 
 	// draw bg ui and footer
 	vd.draw_ui_bg()
 	vd.draw_ui_content()
 
 	// set cursor
+	// TODO: handle new line on prompt
 	in_index := ta.prompt.prompt.len + 2 + ta.in_text.len - ta.in_offset
 	vd.set_cur_pos(in_index, vd.in_linen)
 }
@@ -81,7 +87,6 @@ fn (vd &ViewDrawer) draw_ui_bg() {
 	if vd.size.width > 109 {
 		sbp := vd.bg_info.scrollbar_pos
 		vd.set_bg_color(*custom_colors[.ui_bg_elem])
-		vd.set_color(*custom_colors[.ui_fg_text])
 		vd.draw_line(sbp, 1, sbp, vd.size.height)
 		vd.draw_line(1, vd.size.height, vd.size.width, vd.size.height)
 	}
@@ -90,19 +95,35 @@ fn (vd &ViewDrawer) draw_ui_bg() {
 fn (vd &ViewDrawer) draw_ui_content() {
 	if vd.size.width > 109 {
 		sb_pos := vd.bg_info.scrollbar_pos
-		mode := 'mode: $vd.text_area.prompt.mode'
-		focus := 'focus: $vd.focus'
-		fixed := 'fixed: $vd.text_area.fixed'
-		lineno := 'in: $vd.in_linen out: $vd.out_linen'
-		out_len := 'buff lines: $vd.out_text.len'
-		sbp := 'sbp: $sb_pos'
-		in_len := 'in len: $vd.text_area.colored_in().len'
-		status := '$mode | $focus | $fixed | $lineno | $out_len | $sbp | $in_len'
+		status := if debug {
+			mode := 'mode: $vd.text_area.prompt.mode'
+			focus := 'focus: $vd.focus'
+			fixed := 'fixed: $vd.text_area.fixed'
+			lineno := 'in: $vd.in_linen out: $vd.out_linen'
+			in_len := 'in len: $vd.text_area.colored_in().len'
+			out_len := 'buff lines: $vd.out_text.len'
+			sbp := 'sbp: $sb_pos'
+			'$mode | $focus | $fixed | $lineno | $in_len | $out_len | $sbp'
+		} else {
+			mode := 'mode: $vd.text_area.prompt.mode'
+			focus := 'focus: $vd.focus'
+			fixed := 'fixed: $vd.text_area.fixed'
+			'$mode | $focus | $fixed'
+		}
 		x := (vd.size.width - status.len) / 2
 		vd.draw_text(x, vd.size.height, status)
 		// draw scroll indicators
-		vd.draw_text(sb_pos, 1, u_arrow)
-		vd.draw_text(sb_pos, vd.size.height - 1, d_arrow)
+		up, down := vd.can_do_scroll()
+		if up {
+			vd.draw_text(sb_pos, 1, colors[.arrows](u_arrow))
+		} else {
+			vd.draw_text(sb_pos, 1, u_arrow)
+		}
+		if down {
+			vd.draw_text(sb_pos, vd.size.height - 1, colors[.arrows](d_arrow))
+		} else {
+			vd.draw_text(sb_pos, vd.size.height - 1, d_arrow)
+		}
 	}
 }
 
@@ -140,4 +161,52 @@ fn (mut vd ViewDrawer) handle_change_size() {
 			vd.bg_info.scrollbar_pos = ws.width
 		}
 	}
+}
+
+fn (mut vd ViewDrawer) scroll_up() {
+	up, _ := vd.can_do_scroll()
+	if up {
+		match vd.text_area.fixed {
+			false { vd.out_offset += 1 }
+			true { vd.out_offset -= 1 }
+		}
+	}
+}
+
+fn (mut vd ViewDrawer) scroll_down() {
+	_, down := vd.can_do_scroll()
+	if down {
+		match vd.text_area.fixed {
+			false { vd.out_offset -= 1 }
+			true { vd.out_offset += 1 }
+		}
+	}
+}
+
+fn (vd &ViewDrawer) can_do_scroll() (bool, bool) {
+	mut up := false
+	mut down := false
+	match vd.text_area.fixed {
+		false {
+			// 2 = 1 for the footer + 1 for new prompt
+			if vd.out_text.len - 2 > vd.size.height
+				&& vd.out_offset - 2 < vd.out_text.len - vd.size.height {
+				up = true
+			}
+			if vd.out_text.len > vd.size.height - 2 && vd.out_offset > 0 {
+				down = true
+			}
+		}
+		// same as above
+		true {
+			if vd.out_text.len > vd.size.height - 2 && vd.out_offset > 0 {
+				up = true
+			}
+			if vd.out_text.len - 2 > vd.size.height
+				&& vd.out_offset - 2 < vd.out_text.len - vd.size.height {
+				down = true
+			}
+		}
+	}
+	return up, down
 }

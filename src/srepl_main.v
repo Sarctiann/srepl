@@ -71,18 +71,17 @@ fn new_repl(args []string) &Repl {
 fn handle_events(e &tui.Event, app voidptr) {
 	mut r := &Repl(app)
 	match e.modifiers {
-		.ctrl {
-			match e.code {
-				.up, .down {
-					r.change_focus()
-				}
-				else {}
-			}
-		}
+		.ctrl {}
 		.shift {
 			match e.code {
-				.up, .down {
-					// TODO: handle scroll
+				.up {
+					r.drawer.scroll_up()
+				}
+				.down {
+					r.drawer.scroll_down()
+				}
+				.left, .right {
+					r.change_focus()
 				}
 				else {}
 			}
@@ -110,10 +109,12 @@ fn handle_events(e &tui.Event, app voidptr) {
 						r.text_area.input_delete()
 					}
 					.enter {
+						// TODO: handle new line on multiline expression
 						r.drawer.puts(r.text_area.colored_in())
 						r.action = .eval
 					}
 					else {
+						// TODO: handle new line on width limit
 						r.text_area.input_insert(e.utf8)
 					}
 				}

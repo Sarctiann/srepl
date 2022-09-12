@@ -34,17 +34,13 @@ const (
 		THC.assign:           &term.bright_yellow
 		THC.number:           &term.yellow
 		THC._string:          &term.green
+		THC.arrows:           &term.bright_yellow
 	}
 	custom_colors = {
 		THC.ui_bg_elem: &tui.Color{
 			r: 90
 			g: 90
 			b: 90
-		}
-		THC.ui_fg_text: &tui.Color{
-			r: 255
-			g: 255
-			b: 255
 		}
 	}
 	functions = {
@@ -92,7 +88,6 @@ enum THC { // token highlighting color ...what do you thought?
 	msg_warn
 	msg_error
 	ui_bg_elem
-	ui_fg_text
 	repl_fn
 	keyword
 	operator
@@ -102,6 +97,7 @@ enum THC { // token highlighting color ...what do you thought?
 	assign
 	number
 	_string
+	arrows
 }
 
 enum Focus {

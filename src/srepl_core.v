@@ -29,9 +29,9 @@ fn (mut r Repl) read() {
 fn (mut r Repl) eval() {
 	if r.action == .eval {
 		mut ta := r.text_area
-
 		in_text := ta.in_text.string()
 		if in_text.starts_with(cpfix) {
+			// SREPL functions
 			cmd := in_text.trim(cpfix).trim_space()
 			if cmd in functions {
 				functions[cmd](mut r)
@@ -41,13 +41,17 @@ fn (mut r Repl) eval() {
 				r.action = .print
 			}
 		} else {
+			// EVAL
 			if in_text.trim_space() != '' {
 				todo := colors[.msg_error](' EVAL ENGINE NOT IMPLEMENTED YET')
 				r.drawer.puts(in_text.trim_space() + todo)
 			}
 			r.action = .print
 		}
+
+		// Execute Always
 		ta.in_offset = 0
+		r.drawer.out_offset = 0
 		ta.in_text.clear()
 		r.action = .read
 	}
@@ -67,9 +71,15 @@ fn (mut r Repl) on_cycle_end() {
 
 fn (mut r Repl) change_focus() {
 	if r.tui.window_width > 109 {
-		r.focus = match r.focus {
-			.text_area { .prog_list }
-			.prog_list { .text_area }
+		match r.focus {
+			.text_area {
+				r.focus = .prog_list
+				r.tui.hide_cursor()
+			}
+			.prog_list {
+				r.focus = .text_area
+				r.tui.show_cursor()
+			}
 		}
 	} else {
 		r.focus = .text_area
