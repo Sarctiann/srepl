@@ -9,6 +9,9 @@
 * implement program list
 * implement reset repl
 * implement save
+* input history
+* copy and paste
+* mouse support
 
 
 ### IMPLEMENTATION GOALS:

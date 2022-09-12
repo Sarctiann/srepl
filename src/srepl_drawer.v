@@ -103,7 +103,8 @@ fn (vd &ViewDrawer) draw_ui_content() {
 			in_len := 'in len: $vd.text_area.colored_in().len'
 			out_len := 'buff lines: $vd.out_text.len'
 			sbp := 'sbp: $sb_pos'
-			'$mode | $focus | $fixed | $lineno | $in_len | $out_len | $sbp'
+			winsize := 'w:$vd.size.width,h:$vd.size.height'
+			'$mode | $focus | $fixed | $lineno | $in_len | $out_len | $sbp | $winsize'
 		} else {
 			mode := 'mode: $vd.text_area.prompt.mode'
 			focus := 'focus: $vd.focus'
@@ -189,8 +190,8 @@ fn (vd &ViewDrawer) can_do_scroll() (bool, bool) {
 	match vd.text_area.fixed {
 		false {
 			// 2 = 1 for the footer + 1 for new prompt
-			if vd.out_text.len - 2 > vd.size.height
-				&& vd.out_offset - 2 < vd.out_text.len - vd.size.height {
+			if vd.out_text.len > vd.size.height - 2
+				&& vd.out_offset < vd.out_text.len - vd.size.height + 2 {
 				up = true
 			}
 			if vd.out_text.len > vd.size.height - 2 && vd.out_offset > 0 {
@@ -202,8 +203,8 @@ fn (vd &ViewDrawer) can_do_scroll() (bool, bool) {
 			if vd.out_text.len > vd.size.height - 2 && vd.out_offset > 0 {
 				up = true
 			}
-			if vd.out_text.len - 2 > vd.size.height
-				&& vd.out_offset - 2 < vd.out_text.len - vd.size.height {
+			if vd.out_text.len > vd.size.height - 2 
+				&& vd.out_offset <  vd.out_text.len - vd.size.height + 2 {
 				down = true
 			}
 		}
