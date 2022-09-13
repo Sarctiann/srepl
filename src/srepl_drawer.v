@@ -20,6 +20,7 @@ mut:
 	out_linen  int = 1
 }
 
+[inline]
 fn (mut vd ViewDrawer) draw() {
 	ta := vd.text_area
 	bgi := vd.bg_info
@@ -77,12 +78,10 @@ fn (mut vd ViewDrawer) draw() {
 	vd.draw_ui_bg()
 	vd.draw_ui_content()
 
-	// set cursor
-	// TODO: handle new line on prompt
-	in_index := ta.prompt.prompt.len + 2 + ta.in_text.len - ta.in_offset
-	vd.set_cur_pos(in_index, vd.in_linen)
+	vd.set_cursor()
 }
 
+[inline]
 fn (vd &ViewDrawer) draw_ui_bg() {
 	if vd.size.width > 109 {
 		sbp := vd.bg_info.scrollbar_pos
@@ -92,6 +91,7 @@ fn (vd &ViewDrawer) draw_ui_bg() {
 	}
 }
 
+[inline]
 fn (vd &ViewDrawer) draw_ui_content() {
 	if vd.size.width > 109 {
 		sb_pos := vd.bg_info.scrollbar_pos
@@ -203,11 +203,19 @@ fn (vd &ViewDrawer) can_do_scroll() (bool, bool) {
 			if vd.out_text.len > vd.size.height - 2 && vd.out_offset > 0 {
 				up = true
 			}
-			if vd.out_text.len > vd.size.height - 2 
-				&& vd.out_offset <  vd.out_text.len - vd.size.height + 2 {
+			if vd.out_text.len > vd.size.height - 2
+				&& vd.out_offset < vd.out_text.len - vd.size.height + 2 {
 				down = true
 			}
 		}
 	}
 	return up, down
+}
+
+[inline]
+fn (mut vd ViewDrawer) set_cursor() {
+	// TODO: handle new line on prompt
+	ta := vd.text_area
+	in_index := ta.prompt.prompt.len + 2 + ta.in_text.len - ta.in_offset
+	vd.set_cur_pos(in_index, vd.in_linen)
 }

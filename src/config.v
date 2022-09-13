@@ -111,3 +111,8 @@ enum Action {
 	eval
 	print
 }
+
+enum Displacement {
+	char
+	word
+}

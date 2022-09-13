@@ -4,14 +4,15 @@
 
 ### IN PROGRESS:
 
+* input history
+* input block (multiline)
+* copy and paste
+* mouse support
 * #### implement EVAL engine (maybe using v interpreter...)
 * implement secondary functions (to show file and path)
 * implement program list
 * implement reset repl
 * implement save
-* input history
-* copy and paste
-* mouse support
 
 
 ### IMPLEMENTATION GOALS:

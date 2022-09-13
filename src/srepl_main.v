@@ -68,10 +68,21 @@ fn new_repl(args []string) &Repl {
 	return app
 }
 
+// FIXME: handle modifiers inside KeyCodes
 fn handle_events(e &tui.Event, app voidptr) {
 	mut r := &Repl(app)
 	match e.modifiers {
-		.ctrl {}
+		.ctrl {
+			match e.code {
+				.left {
+					r.text_area.cursor_backward(.word)
+				}
+				.right {
+					r.text_area.cursor_forward(.word)
+				}
+				else {}
+			}
+		}
 		.shift {
 			match e.code {
 				.up {
@@ -97,10 +108,10 @@ fn handle_events(e &tui.Event, app voidptr) {
 					}
 					.up, .down {}
 					.left {
-						r.text_area.cursor_backward(1)
+						r.text_area.cursor_backward(.char)
 					}
 					.right {
-						r.text_area.cursor_forward(1)
+						r.text_area.cursor_forward(.char)
 					}
 					.backspace {
 						r.text_area.input_remove()
@@ -109,8 +120,6 @@ fn handle_events(e &tui.Event, app voidptr) {
 						r.text_area.input_delete()
 					}
 					.enter {
-						// TODO: handle new line on multiline expression
-						r.drawer.puts(r.text_area.colored_in())
 						r.action = .eval
 					}
 					else {

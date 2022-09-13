@@ -93,6 +93,7 @@ const (
 	}
 )
 
+[inline]
 fn highlight_input(in_text string) string {
 	if in_text.starts_with(':') {
 		cmd := in_text.trim(cpfix).trim_space()

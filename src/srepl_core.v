@@ -14,20 +14,25 @@ mut:
 	action    Action
 }
 
+[inline]
 fn (mut r Repl) on_cycle_start() {
 	r.tui.clear()
 	r.drawer.handle_change_size()
 	r.bg_info.handle_msg()
 }
 
+[inline]
 fn (mut r Repl) read() {
 	if r.action == .read {
 		r.drawer.draw()
 	}
 }
 
+[inline]
 fn (mut r Repl) eval() {
 	if r.action == .eval {
+		// TODO: handle new line on multiline expression
+		r.drawer.puts(r.text_area.colored_in())
 		mut ta := r.text_area
 		in_text := ta.in_text.string()
 		if in_text.starts_with(cpfix) {
@@ -57,6 +62,7 @@ fn (mut r Repl) eval() {
 	}
 }
 
+[inline]
 fn (mut r Repl) print() {
 	if r.action == .print {
 		r.drawer.draw()
@@ -64,6 +70,7 @@ fn (mut r Repl) print() {
 	}
 }
 
+[inline]
 fn (mut r Repl) on_cycle_end() {
 	r.tui.reset()
 	r.tui.flush()

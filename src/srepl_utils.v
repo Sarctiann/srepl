@@ -13,15 +13,27 @@ fn (mut ta TextArea) input_insert(s string) {
 	ta.in_text.insert(ta.in_text.len - ta.in_offset, s.runes())
 }
 
-fn (mut ta TextArea) cursor_backward(i int) {
-	if ta.in_offset < ta.in_text.len {
-		ta.in_offset += i
+fn (mut ta TextArea) cursor_backward(d Displacement) {
+	match d {
+		.char {
+			if ta.in_offset < ta.in_text.len {
+				ta.in_offset += 1
+			}
+		}
+		// TODO: implement word level displacement
+		.word {}
 	}
 }
 
-fn (mut ta TextArea) cursor_forward(i int) {
-	if ta.in_offset > 0 {
-		ta.in_offset -= i
+fn (mut ta TextArea) cursor_forward(d Displacement) {
+	match d {
+		.char {
+			if ta.in_offset > 0 {
+				ta.in_offset -= 1
+			}
+		}
+		// TODO: implement word level displacement
+		.word {}
 	}
 }
 
