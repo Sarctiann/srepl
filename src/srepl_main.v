@@ -68,37 +68,8 @@ fn new_repl(args []string) &Repl {
 	return app
 }
 
-// FIXME: handle modifiers inside KeyCodes
 fn handle_events(e &tui.Event, app voidptr) {
 	mut r := &Repl(app)
-	match e.modifiers {
-		.ctrl {
-			match e.code {
-				.left {
-					r.text_area.cursor_backward(.word)
-				}
-				.right {
-					r.text_area.cursor_forward(.word)
-				}
-				else {}
-			}
-		}
-		.shift {
-			match e.code {
-				.up {
-					r.drawer.scroll_up()
-				}
-				.down {
-					r.drawer.scroll_down()
-				}
-				.left, .right {
-					r.change_focus()
-				}
-				else {}
-			}
-		}
-		.alt {}
-	}
 	match r.focus {
 		.text_area {
 			if e.typ == .key_down {
@@ -106,12 +77,29 @@ fn handle_events(e &tui.Event, app voidptr) {
 					.escape {
 						quit(mut r)
 					}
-					.up, .down {}
+					.up {
+						if e.modifiers == .shift {
+							r.drawer.scroll_up()
+						} else {}
+					}
+					.down {
+						if e.modifiers == .shift {
+							r.drawer.scroll_down()
+						} else {}
+					}
 					.left {
-						r.text_area.cursor_backward(.char)
+						if e.modifiers == .ctrl {
+							r.text_area.cursor_backward(.word)
+						} else {
+							r.text_area.cursor_backward(.char)
+						}
 					}
 					.right {
-						r.text_area.cursor_forward(.char)
+						if e.modifiers == .ctrl {
+							r.text_area.cursor_forward(.word)
+						} else {
+							r.text_area.cursor_forward(.char)
+						}
 					}
 					.backspace {
 						r.text_area.input_remove()
