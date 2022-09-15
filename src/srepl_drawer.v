@@ -41,7 +41,6 @@ fn (mut vd ViewDrawer) draw() {
 			// 2 = 1 for the footer + 1 for new prompt
 			// TODO: improve for multiline prompt
 			if vd.out_text.len > vd.size.height - 2 {
-				// TODO: handle slice with scroll system
 				start := vd.out_text.len - vd.size.height + 2 - vd.out_offset
 				end := vd.out_text.len - vd.out_offset
 				vd.out_text[start..end].join('\n')
@@ -216,6 +215,7 @@ fn (vd &ViewDrawer) can_do_scroll() (bool, bool) {
 fn (mut vd ViewDrawer) set_cursor() {
 	// TODO: handle new line on prompt
 	ta := vd.text_area
-	in_index := ta.prompt.prompt.len + 2 + ta.in_text.len - ta.in_offset
+	in_index := 5 + ta.in_text.len - ta.in_offset
+
 	vd.set_cur_pos(in_index, vd.in_linen)
 }

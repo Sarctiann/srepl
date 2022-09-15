@@ -67,14 +67,16 @@ const (
 		'save':            &save
 		commands['save']:  &save
 	}
-	u_arrow        = '\u2227'
-	d_arrow        = '\u2228'
-	frame_rate     = 30
-	indent         = '\t'
-	srepl_base_dir = os.dir(os.args[0])
-	temp_dir       = os.temp_dir()
-	help_file      = os.join_path(srepl_base_dir, 'src', 'help.txt')
-	debug          = '-debug' in os.args
+	u_arrow         = '\u2227'
+	d_arrow         = '\u2228'
+	frame_rate      = 30
+	indent          = '\t'
+	word_separators = ' +-*/()[]{}.,\n\t'.runes() // ( CTRL + LEFT/RIGHT events )
+	new_line_chars  = '[({,+-*/'.runes() 					// ( ENTER event )
+	srepl_base_dir  = os.dir(os.args[0])
+	temp_dir        = os.temp_dir()
+	help_file       = os.join_path(srepl_base_dir, 'src', 'help.txt')
+	debug           = '-debug' in os.args
 )
 
 enum Mode {

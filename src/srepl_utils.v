@@ -20,8 +20,25 @@ fn (mut ta TextArea) cursor_backward(d Displacement) {
 				ta.in_offset += 1
 			}
 		}
-		// TODO: implement word level displacement
-		.word {}
+		.word {
+			if ta.in_offset < ta.in_text.len {
+				ta.in_offset += 1
+			}
+			for ta.in_offset < ta.in_text.len {
+				if ta.in_text[ta.in_text.len - 1 - ta.in_offset] in word_separators {
+					ta.in_offset += 1
+				} else {
+					break
+				}
+			}
+			for ta.in_offset < ta.in_text.len {
+				if ta.in_text[ta.in_text.len - 1 - ta.in_offset] !in word_separators {
+					ta.in_offset += 1
+				} else {
+					break
+				}
+			}
+		}
 	}
 }
 
@@ -32,8 +49,25 @@ fn (mut ta TextArea) cursor_forward(d Displacement) {
 				ta.in_offset -= 1
 			}
 		}
-		// TODO: implement word level displacement
-		.word {}
+		.word {
+			if ta.in_offset > 0 {
+				ta.in_offset -= 1
+			}
+			for ta.in_offset > 0 {
+				if ta.in_text[ta.in_text.len - ta.in_offset] in word_separators {
+					ta.in_offset -= 1
+				} else {
+					break
+				}
+			}
+			for ta.in_offset > 0 {
+				if ta.in_text[ta.in_text.len - ta.in_offset] !in word_separators {
+					ta.in_offset -= 1
+				} else {
+					break
+				}
+			}
+		}
 	}
 }
 
@@ -51,8 +85,11 @@ fn (mut ta TextArea) input_delete() {
 }
 
 fn (ta &TextArea) colored_in() string {
+	// TODO: handle multiline prompt
 	if ta.in_text.len > 0 {
-		return ta.prompt.colored() + ' ' + highlight_input(ta.in_text.string())
+		in_lines := ta.in_text.string().split('\n').map(highlight_input(it))
+		glue := '\n' + ta.prompt.more_colored() + ' '
+		return ta.prompt.colored() + ' ' + in_lines.join(glue)
 	} else {
 		return ta.prompt.colored()
 	}
@@ -75,14 +112,17 @@ fn (mut ta TextArea) switch_mode() (string, THC) {
 
 struct Prompt {
 mut:
-	prompt       string
 	color        THC
 	mode         Mode
 	indent_level int
 }
 
 fn (p &Prompt) colored() string {
-	return colors[p.color](p.prompt)
+	return colors[p.color]('>>>')
+}
+
+fn (p &Prompt) more_colored() string {
+	return colors[p.color]('...')
 }
 
 struct BGInfo {

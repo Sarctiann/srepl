@@ -19,7 +19,6 @@ fn new_repl(args []string) &Repl {
 	mut app := &Repl{
 		text_area: &TextArea{
 			prompt: &Prompt{
-				prompt: '>>>'
 				mode: ini_mode
 				color: match ini_mode {
 					.normal { THC.normal_prompt }
@@ -80,12 +79,14 @@ fn handle_events(e &tui.Event, app voidptr) {
 					.up {
 						if e.modifiers == .shift {
 							r.drawer.scroll_up()
-						} else {}
+						} else {
+						}
 					}
 					.down {
 						if e.modifiers == .shift {
 							r.drawer.scroll_down()
-						} else {}
+						} else {
+						}
 					}
 					.left {
 						if e.modifiers == .ctrl {
@@ -108,7 +109,17 @@ fn handle_events(e &tui.Event, app voidptr) {
 						r.text_area.input_delete()
 					}
 					.enter {
-						r.action = .eval
+
+
+						// WIP FIXME TODO ...
+
+						
+						if r.text_area.in_text.len == 0 
+							|| r.text_area.in_text.last() !in new_line_chars {
+							r.action = .eval
+						} else {
+							r.text_area.input_insert('\n')
+						}
 					}
 					else {
 						// TODO: handle new line on width limit
