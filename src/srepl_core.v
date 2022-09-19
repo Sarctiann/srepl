@@ -92,3 +92,22 @@ fn (mut r Repl) change_focus() {
 		r.focus = .text_area
 	}
 }
+
+// TODO, FIXME, SUPER -WIP
+[inline]
+fn (mut r Repl) should_eval() {
+	match true {
+		r.text_area.in_text.len == 0 {
+			r.action = .eval
+		}
+		r.text_area.in_text.len > 0 {
+			last_rune := r.text_area.in_text.filter(it != ` `).last()
+			if last_rune !in ml_flag_chars {
+				r.action = .eval
+			} else {
+				r.text_area.input_insert('\n')
+			}
+		}
+		else {}
+	}
+}

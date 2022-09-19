@@ -49,7 +49,7 @@ fn new_repl(args []string) &Repl {
 		msg_color: THC.msg_info
 		msg_hide_tick: 3 * frame_rate
 	}
-	app.drawer = ViewDrawer{
+	app.drawer = &ViewDrawer{
 		draw_text: unsafe { app.tui.draw_text }
 		draw_line: unsafe { app.tui.draw_line }
 		set_cur_pos: unsafe { app.tui.set_cursor_position }
@@ -91,6 +91,8 @@ fn handle_events(e &tui.Event, app voidptr) {
 					.left {
 						if e.modifiers == .ctrl {
 							r.text_area.cursor_backward(.word)
+						} else if e.modifiers == .shift {
+							r.change_focus()
 						} else {
 							r.text_area.cursor_backward(.char)
 						}
@@ -98,6 +100,8 @@ fn handle_events(e &tui.Event, app voidptr) {
 					.right {
 						if e.modifiers == .ctrl {
 							r.text_area.cursor_forward(.word)
+						} else if e.modifiers == .shift {
+							r.change_focus()
 						} else {
 							r.text_area.cursor_forward(.char)
 						}
@@ -109,17 +113,7 @@ fn handle_events(e &tui.Event, app voidptr) {
 						r.text_area.input_delete()
 					}
 					.enter {
-
-
-						// WIP FIXME TODO ...
-
-						
-						if r.text_area.in_text.len == 0 
-							|| r.text_area.in_text.last() !in new_line_chars {
-							r.action = .eval
-						} else {
-							r.text_area.input_insert('\n')
-						}
+						r.should_eval()
 					}
 					else {
 						// TODO: handle new line on width limit
@@ -130,7 +124,36 @@ fn handle_events(e &tui.Event, app voidptr) {
 				// TODO: handle mouse events
 			}
 		}
-		.prog_list {}
+		.prog_list {
+			if e.typ == .key_down {
+				match e.code {
+					.escape {
+						quit(mut r)
+					}
+					.up {}
+					.down {}
+					.left {
+						if e.modifiers == .shift {
+							r.change_focus()
+						}
+					}
+					.right {
+						if e.modifiers == .shift {
+							r.change_focus()
+						}
+					}
+					.backspace {}
+					.delete {}
+					.enter {}
+					else {
+						// TODO: handle new line on width limit
+						r.text_area.input_insert(e.utf8)
+					}
+				}
+			} else {
+				// TODO: handle mouse events
+			}
+		}
 	}
 }
 
