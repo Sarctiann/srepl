@@ -5,9 +5,9 @@ import term.ui as tui
 struct Repl {
 mut:
 	tui       &tui.Context = unsafe { nil }
-	text_area &TextArea
-	prog_list &ProgList
-	repl_data &ReplData
+	text_area &TextArea    = unsafe { nil }
+	prog_list &ProgList    = unsafe { nil }
+	repl_data &ReplData    = unsafe { nil }
 	bg_info   BGInfo
 	drawer    ViewDrawer
 	focus     Focus

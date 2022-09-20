@@ -3,17 +3,17 @@ module main
 import term.ui
 
 struct ViewDrawer {
-	draw_text    fn (int, int, string)
-	draw_line    fn (int, int, int, int)
-	set_cur_pos  fn (int, int)
-	set_bg_color fn (ui.Color)
-	set_color    fn (ui.Color)
+	draw_text    fn (int, int, string)   = unsafe { nil }
+	draw_line    fn (int, int, int, int) = unsafe { nil }
+	set_cur_pos  fn (int, int) = unsafe { nil }
+	set_bg_color fn (ui.Color) = unsafe { nil }
+	set_color    fn (ui.Color) = unsafe { nil }
 mut:
-	size       &WinSize
-	text_area  &TextArea
-	prog_list  &ProgList
-	bg_info    &BGInfo
-	focus      &Focus
+	size       &WinSize  = unsafe { nil }
+	text_area  &TextArea = unsafe { nil }
+	prog_list  &ProgList = unsafe { nil }
+	bg_info    &BGInfo   = unsafe { nil }
+	focus      &Focus    = unsafe { nil }
 	out_text   []string
 	out_offset int
 	in_linen   int = 1

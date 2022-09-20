@@ -2,7 +2,7 @@ module main
 
 struct TextArea {
 mut:
-	prompt    &Prompt
+	prompt    &Prompt = unsafe { nil }
 	fixed     bool
 	in_text   []rune
 	in_offset int
@@ -127,7 +127,7 @@ fn (p &Prompt) more_colored() string {
 }
 
 struct BGInfo {
-	frame_count &u64
+	frame_count &u64 = unsafe { nil }
 mut:
 	scrollbar_pos int
 	footer        string
@@ -165,6 +165,6 @@ struct WinSize {
 mut:
 	width  int
 	height int
-	new_w  &int
-	new_h  &int
+	new_w  &int = unsafe { nil }
+	new_h  &int = unsafe { nil }
 }
