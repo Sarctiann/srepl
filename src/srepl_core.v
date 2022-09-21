@@ -96,18 +96,31 @@ fn (mut r Repl) change_focus() {
 // TODO, FIXME, SUPER -WIP
 [inline]
 fn (mut r Repl) should_eval() {
-	match true {
-		r.text_area.in_text.len == 0 {
-			r.action = .eval
-		}
-		r.text_area.in_text.len > 0 {
-			last_rune := r.text_area.in_text.filter(it != ` `).last()
-			if last_rune !in ml_flag_chars {
+	if r.text_area.in_text.len > 0 {
+		last_rune := r.text_area.in_text.filter(it != ` `).last()
+		match true {
+			last_rune in ml_flag_chars {
+				if last_rune in ml_clousures {
+					r.text_area.ml_flags << ml_clousures[last_rune]
+				}
+				r.text_area.input_insert('\n')
+			}
+			r.text_area.ml_flags.len == 0 {
 				r.action = .eval
-			} else {
+			}
+			last_rune == r.text_area.ml_flags.last() {
+				r.text_area.ml_flags.delete_last()
+				if r.text_area.ml_flags.len == 0 {
+					r.action = .eval
+				} else {
+					r.text_area.input_insert('\n')
+				}
+			}
+			else {
 				r.text_area.input_insert('\n')
 			}
 		}
-		else {}
+	} else {
+		r.action = .eval
 	}
 }
