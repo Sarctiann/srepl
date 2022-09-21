@@ -6,7 +6,8 @@ mut:
 	fixed     bool
 	in_text   []rune
 	in_offset int
-	ml_flag   rune
+	line_offs int
+	ml_flags  []rune
 	in_hist   []string
 }
 
