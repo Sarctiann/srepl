@@ -9,7 +9,7 @@ Examples:
 
 --------------------------------------------------------------------------------
 Sarctiann REPL is a reimplementation of vrepl
-Start a vlang repl with reading the given file.
+Start a v repl session with the given file loaded.
 --------------------------------------------------------------------------------
 
 flags:
@@ -18,16 +18,16 @@ flags:
     -ft              Initialize with prompt fixed on top
 
 commands:
-    cpfix-list      Show accumulated program.
-    cpfix-reset     Reload file or clean accumulated program.
-    cpfix-help      Show this help.
-    cpfix-clear     Clean the screen.
-    cpfix-quit      Quit repl.
-    cpfix-exit      Same as above.
-    cpfix-mode      Alternate between "normal" and "overwrite" mode.
-    cpfix-file      Show current file name.
-    cpfix-path      Show current file path.
-    cpfix-save      Save accumulated program.
+    cpfix-list        Show accumulated program.
+    cpfix-reset       Reload file or clean accumulated program.
+    cpfix-help        Show this help.
+    cpfix-clear       Clean the screen.
+    cpfix-quit        Quit repl.
+    cpfix-exit        Same as above.
+    cpfix-mode        Alternate between "normal" and "overwrite" mode.
+    cpfix-file        Show current file name.
+    cpfix-path        Show current file path.
+    cpfix-save        Save accumulated program.
 
 key bindings:
     SHIFT UP/DOWN    to scroll up and down the output

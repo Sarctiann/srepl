@@ -18,7 +18,7 @@ fn show_help(mut r Repl) {
 	help := os.read_file(help_file) or { panic('Missing Help File') }
 	mut f_hf := help.replace('cpfix', cpfix)
 	for k, v in commands {
-		f_hf = f_hf.replace('-$k', '$k or $cpfix$v')
+		f_hf = f_hf.replace('-$k', '$k, $cpfix$v')
 	}
 	r.drawer.puts(f_hf)
 	r.action = .print
