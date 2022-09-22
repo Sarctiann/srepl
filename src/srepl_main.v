@@ -113,7 +113,7 @@ fn handle_events(e &tui.Event, app voidptr) {
 						r.text_area.input_delete()
 					}
 					.enter {
-						r.should_eval()
+						r.on_press_enter()
 					}
 					else {
 						// TODO: handle new line on width limit

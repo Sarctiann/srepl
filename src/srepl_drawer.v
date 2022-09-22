@@ -214,8 +214,7 @@ fn (vd &ViewDrawer) can_do_scroll() (bool, bool) {
 [inline]
 fn (mut vd ViewDrawer) set_cursor() {
 	// TODO: handle new line on prompt
-	ta := vd.text_area
+	mut ta := vd.text_area
 	in_index := 5 + ta.in_text.len - ta.in_offset
-
-	vd.set_cur_pos(in_index, vd.in_linen)
+	vd.set_cur_pos(in_index, vd.in_linen + ta.line_offs)
 }

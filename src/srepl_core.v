@@ -31,8 +31,6 @@ fn (mut r Repl) read() {
 [inline]
 fn (mut r Repl) eval() {
 	if r.action == .eval {
-		// TODO: handle new line on multiline expression
-		r.drawer.puts(r.text_area.colored_in())
 		mut ta := r.text_area
 		in_text := ta.in_text.string()
 		if in_text.starts_with(cpfix) {
@@ -50,15 +48,17 @@ fn (mut r Repl) eval() {
 			if in_text.trim_space() != '' {
 				todo := colors[.msg_error](' EVAL ENGINE NOT IMPLEMENTED YET')
 				r.drawer.puts(in_text.trim_space() + todo)
+				r.action = .print
+			} else {
+				r.action = .read
 			}
-			r.action = .print
 		}
 
 		// Execute Always
 		ta.in_offset = 0
+		ta.line_offs = 0
 		r.drawer.out_offset = 0
 		ta.in_text.clear()
-		r.action = .read
 	}
 }
 
@@ -93,34 +93,44 @@ fn (mut r Repl) change_focus() {
 	}
 }
 
-// TODO, FIXME, SUPER -WIP
+// TODO: (make a less ugly code)
 [inline]
-fn (mut r Repl) should_eval() {
-	if r.text_area.in_text.len > 0 {
-		last_rune := r.text_area.in_text.filter(it != ` `).last()
-		match true {
-			last_rune in ml_flag_chars {
-				if last_rune in ml_clousures {
-					r.text_area.ml_flags << ml_clousures[last_rune]
-				}
-				r.text_area.input_insert('\n')
+fn (mut r Repl) on_press_enter() {
+	r.text_area.line_offs = r.text_area.in_text.string().split('\n').len
+	// Empty line
+	if r.text_area.in_text.len == 0 {
+		r.drawer.puts(r.text_area.colored_in())
+		r.action = .print
+		return
+	}
+	// Get last char from input
+	last_rune := r.text_area.in_text.filter(it != ` `).last()
+	match true {
+		// Must make a new line
+		last_rune in ml_flag_chars {
+			// Also... if its a context opening, save this char
+			if last_rune in ml_clousures {
+				r.text_area.ml_flags << ml_clousures[last_rune]
 			}
-			r.text_area.ml_flags.len == 0 {
+			r.text_area.input_insert('\n')
+		}
+		// Else if there are not open context, eval
+		r.text_area.ml_flags.len == 0 {
+			r.drawer.puts(r.text_area.colored_in())
+			r.action = .eval
+		}
+		last_rune == r.text_area.ml_flags.last() {
+			r.text_area.ml_flags.delete_last()
+			// warn!!! DUP
+			if r.text_area.ml_flags.len == 0 {
+				r.drawer.puts(r.text_area.colored_in())
 				r.action = .eval
-			}
-			last_rune == r.text_area.ml_flags.last() {
-				r.text_area.ml_flags.delete_last()
-				if r.text_area.ml_flags.len == 0 {
-					r.action = .eval
-				} else {
-					r.text_area.input_insert('\n')
-				}
-			}
-			else {
+			} else {
 				r.text_area.input_insert('\n')
 			}
 		}
-	} else {
-		r.action = .eval
+		else {
+			r.text_area.input_insert('\n')
+		}
 	}
 }
