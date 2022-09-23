@@ -6,6 +6,7 @@ mut:
 	fixed     bool
 	in_text   []rune
 	in_offset int
+	lines_len []int
 	line_offs int
 	ml_flags  []rune
 	in_hist   []string
@@ -87,7 +88,6 @@ fn (mut ta TextArea) input_delete() {
 }
 
 fn (ta &TextArea) colored_in() string {
-	// TODO: handle multiline prompt
 	if ta.in_text.len > 0 {
 		in_lines := ta.in_text.string().split('\n').map(highlight_input(it))
 		glue := '\n' + ta.prompt.more_colored() + ' '

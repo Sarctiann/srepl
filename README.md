@@ -52,8 +52,9 @@ Finally, ...for now, we will be able to save this accumulated program, you may w
 ## Intended Lib Stack:
 
 * `os`
-* `os.cmdline`
 * `term.ui`
+* `os.cmdline`
+* `arrays.sum`
 
 ---
 

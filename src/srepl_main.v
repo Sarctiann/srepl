@@ -106,6 +106,9 @@ fn handle_events(e &tui.Event, app voidptr) {
 							r.text_area.cursor_forward(.char)
 						}
 					}
+					.tab {
+						r.text_area.input_insert(indent)
+					}
 					.backspace {
 						r.text_area.input_remove()
 					}

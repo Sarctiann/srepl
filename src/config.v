@@ -74,8 +74,8 @@ const (
 	u_arrow         = '\u2227'
 	d_arrow         = '\u2228'
 	frame_rate      = 30
-	indent          = '\t'
-	word_separators = ' +-*/()[]{}.,\n\t'.runes() // ( CTRL + LEFT/RIGHT events )
+	indent          = '    '
+	word_separators = ' +-*/()[]{}.,'.runes() // ( CTRL + LEFT/RIGHT events )
 	ml_flag_chars   = '[({,+-*/'.runes() // ( ENTER event )
 	ml_clousures    = {
 		`[`: `]`
