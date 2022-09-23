@@ -14,6 +14,28 @@ mut:
 
 fn (mut ta TextArea) input_insert(s string) {
 	ta.in_text.insert(ta.in_text.len - ta.in_offset, s.runes())
+	// Handle some data for Drawer.set_cursor
+	if ta.in_text.len > 0 {
+		ta.lines_len = ta.in_text.string().split('\n').map(it.len + 1)
+		ta.line_offs = ta.lines_len.len - 1
+	}
+}
+
+fn (mut ta TextArea) should_eval () bool {
+	ta.ml_flags.clear()
+	ta.ml_flags << ta.in_text.filter(it in ml_clousures).map(ml_clousures[it])
+	for r in ta.in_text {
+		if ta.ml_flags.len > 0 && r == ta.ml_flags.last() {
+			ta.ml_flags.delete_last()
+		}
+	}
+	last_rune := ta.in_text.filter(it != ` `).last()
+	if ta.ml_flags.len == 0 && last_rune !in ml_flag_chars {
+		return true
+	} else {
+		ta.input_insert('\n')
+		return false
+	}
 }
 
 fn (mut ta TextArea) cursor_backward(d Displacement) {

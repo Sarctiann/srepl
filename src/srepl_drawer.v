@@ -102,13 +102,16 @@ fn (vd &ViewDrawer) draw_ui_content() {
 			// fixed := 'fixed: $vd.text_area.fixed'
 			// lineno := 'in: $vd.in_linen out: $vd.out_linen'
 			// sbp := 'sbp: $sb_pos'
+
 			color_in_len := 'colored in len: $vd.text_area.colored_in().len'
 			in_len := 'in len: $vd.text_area.in_text.len'
 			lines_len := 'lines len: $vd.text_area.lines_len'
+			ml_flags := 'ml flags: $vd.text_area.ml_flags'
 			in_offset := 'in offset: $vd.text_area.in_offset'
+
 			out_len := 'out lines len: $vd.out_text.len'
 			winsize := 'w:$vd.size.width,h:$vd.size.height'
-			'$color_in_len | $in_len | $lines_len | $in_offset | $out_len | $winsize'
+			'$color_in_len | $in_len | $lines_len | $in_offset | $ml_flags | $out_len | $winsize'
 		} else {
 			mode := 'mode: $vd.text_area.prompt.mode'
 			focus := 'focus: $vd.focus'
@@ -218,10 +221,10 @@ fn (vd &ViewDrawer) can_do_scroll() (bool, bool) {
 
 [inline]
 fn (mut vd ViewDrawer) set_cursor() {
-	// ta.lines_len and ta.line_offs were set in Repl.on_press_enter
 	mut ta := vd.text_area
-	in_index := if ta.lines_len.len > 0 {
-		lines_len_sum := arrays.sum(ta.lines_len)  or { panic(error) }
+	// ta.lines_len and ta.line_offs were set in TextArea.input_insert
+	in_index := if ta.lines_len.len > 1 {
+		lines_len_sum := arrays.sum(ta.lines_len#[..-1]) or { panic(error) }
 		5 + ta.in_text.len - ta.in_offset - lines_len_sum
 	} else {
 		5 + ta.in_text.len - ta.in_offset

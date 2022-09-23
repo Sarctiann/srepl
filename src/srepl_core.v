@@ -94,29 +94,16 @@ fn (mut r Repl) change_focus() {
 	}
 }
 
-[inline]
 fn (mut r Repl) on_press_enter() {
-	mut ta := r.text_area
 	// If no input text
-	if ta.in_text.len == 0 {
-		r.drawer.puts(ta.colored_in())
+	if r.text_area.in_text.len == 0 {
+		r.drawer.puts(r.text_area.colored_in())
 		r.action = .print
 		return
 	}
-	// Else, handle some data for Drawer.set_cursor
-	ta.lines_len = ta.in_text.string().split('\n').map(it.len + 1)
-	ta.line_offs = ta.lines_len.len
-	last_rune := ta.in_text.filter(it != ` `).last()
-	if last_rune in ml_clousures {
-		ta.ml_flags << ml_clousures[last_rune]
-	}
-	if ta.ml_flags.len > 0 && last_rune == ta.ml_flags.last() {
-		ta.ml_flags.delete_last()
-	}
-	if ta.ml_flags.len == 0 && last_rune !in ml_flag_chars {
-		r.drawer.puts(ta.colored_in())
+	// Else, derive to evaluation or input new line
+	if r.text_area.should_eval() {
+		r.drawer.puts(r.text_area.colored_in())
 		r.action = .eval
-	} else {
-		ta.input_insert('\n')
 	}
 }
