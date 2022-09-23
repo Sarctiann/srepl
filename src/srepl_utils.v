@@ -22,9 +22,10 @@ fn (mut ta TextArea) input_insert(s string) {
 }
 
 fn (mut ta TextArea) should_eval () bool {
+	// TODO: handle open and close in same line
 	ta.ml_flags.clear()
 	ta.ml_flags << ta.in_text.filter(it in ml_clousures).map(ml_clousures[it])
-	for r in ta.in_text {
+	for r in ta.in_text.reverse() {
 		if ta.ml_flags.len > 0 && r == ta.ml_flags.last() {
 			ta.ml_flags.delete_last()
 		}
