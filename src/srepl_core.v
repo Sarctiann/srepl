@@ -53,13 +53,7 @@ fn (mut r Repl) eval() {
 				r.action = .read
 			}
 		}
-
-		// Execute Always
-		ta.in_offset = 0
-		ta.lines_len.clear()
-		ta.line_offs = 0
-		r.drawer.out_offset = 0
-		ta.in_text.clear()
+		r.reset_prompt_cycle()
 	}
 }
 
@@ -97,13 +91,20 @@ fn (mut r Repl) change_focus() {
 fn (mut r Repl) on_press_enter() {
 	// If no input text
 	if r.text_area.in_text.len == 0 {
-		r.drawer.puts(r.text_area.colored_in())
+		r.drawer.puts(r.text_area.colored_in().replace('\t', indent))
 		r.action = .print
 		return
 	}
 	// Else, derive to evaluation or input new line
 	if r.text_area.should_eval() {
-		r.drawer.puts(r.text_area.colored_in())
+		r.drawer.puts(r.text_area.colored_in().replace('\t', indent))
 		r.action = .eval
 	}
+}
+
+fn (mut r Repl) reset_prompt_cycle() {
+	r.text_area.in_offset = 0
+	r.text_area.line_offs = 0
+	r.drawer.out_offset = 0
+	r.text_area.in_text.clear()
 }

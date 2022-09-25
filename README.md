@@ -54,7 +54,6 @@ Finally, ...for now, we will be able to save this accumulated program, you may w
 * `os`
 * `term.ui`
 * `os.cmdline`
-* `arrays.sum`
 
 ---
 

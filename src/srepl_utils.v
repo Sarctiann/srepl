@@ -6,7 +6,6 @@ mut:
 	fixed     bool
 	in_text   []rune
 	in_offset int
-	lines_len []int
 	line_offs int
 	ml_flags  []rune
 	in_hist   []string
@@ -14,22 +13,28 @@ mut:
 
 fn (mut ta TextArea) input_insert(s string) {
 	ta.in_text.insert(ta.in_text.len - ta.in_offset, s.runes())
-	// Handle some data for Drawer.set_cursor
-	if ta.in_text.len > 0 {
-		ta.lines_len = ta.in_text.string().split('\n').map(it.len + 1)
-		ta.line_offs = ta.lines_len.len - 1
-	}
 }
 
 fn (mut ta TextArea) should_eval() bool {
+	last_rune := ta.in_text.filter(it != ` `).last()
 	ta.ml_flags.clear()
-	ta.ml_flags << ta.in_text.filter(it in ml_clousures).map(ml_clousures[it])
-	filtered := ta.in_text.filter(it in ml_clousures.values())
-	ta.ml_flags = ta.ml_flags.filter(it !in filtered)
-	if ta.ml_flags.len == 0 {
+	ta.ml_flags << ta.in_text.filter(it in ml_clousures).map(ml_clousures[it]).reverse()
+	for r in ta.in_text {
+		if r in ta.ml_flags {
+			ta.ml_flags.delete(ta.ml_flags.index(r))
+			if r == last_rune && ta.prompt.indent_level > 0 {
+				ta.prompt.indent_level -= 1
+			}
+		}
+	}
+	if ta.ml_flags.len == 0 && last_rune !in ml_flag_chars {
+		ta.prompt.indent_level = 0
 		return true
 	} else {
-		ta.input_insert('\n')
+		if last_rune in ml_clousures {
+			ta.prompt.indent_level += 1
+		}
+		ta.input_insert('\n${'\t'.repeat(ta.prompt.indent_level)}')
 		return false
 	}
 }
@@ -128,6 +133,15 @@ fn (mut ta TextArea) switch_mode() (string, THC) {
 			return 'switched to normal mode', THC.msg_info
 		}
 	}
+}
+
+fn (mut ta TextArea) cur_line() []rune {
+	lines := ta.in_text.string().split('\n')
+	return lines[lines.len - ta.line_offs - 1].runes()
+}
+
+fn (mut ta TextArea) how_many_lines() int {
+	return ta.in_text.string().split('\n').len
 }
 
 struct Prompt {

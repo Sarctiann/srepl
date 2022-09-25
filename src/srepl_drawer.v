@@ -1,7 +1,6 @@
 module main
 
 import term.ui
-import arrays
 
 struct ViewDrawer {
 	draw_text    fn (int, int, string)   = unsafe { nil }
@@ -63,7 +62,7 @@ fn (mut vd ViewDrawer) draw() {
 	vd.draw_text(1, vd.out_linen, output)
 
 	// draw input text
-	vd.draw_text(1, vd.in_linen, ta.colored_in())
+	vd.draw_text(1, vd.in_linen, ta.colored_in().replace('\t', indent))
 
 	// draw bg_info.msg
 	if bgi.msg_text != '' {
@@ -105,13 +104,14 @@ fn (vd &ViewDrawer) draw_ui_content() {
 
 			color_in_len := 'colored in len: $vd.text_area.colored_in().len'
 			in_len := 'in len: $vd.text_area.in_text.len'
-			lines_len := 'lines len: $vd.text_area.lines_len'
 			ml_flags := 'ml flags: $vd.text_area.ml_flags'
 			in_offset := 'in offset: $vd.text_area.in_offset'
+			tabs := 'tabs: ${vd.text_area.in_text.filter(it == `\t`).len * (indent.len - 1)}'
+			// ind_lev := 'ind_lev: $vd.text_area.prompt.indent_level'
 
 			out_len := 'out lines len: $vd.out_text.len'
 			winsize := 'w:$vd.size.width,h:$vd.size.height'
-			'$color_in_len | $in_len | $lines_len | $in_offset | $ml_flags | $out_len | $winsize'
+			'$color_in_len | $in_len | $in_offset | $ml_flags | $tabs | $out_len | $winsize'
 		} else {
 			mode := 'mode: $vd.text_area.prompt.mode'
 			focus := 'focus: $vd.focus'
@@ -222,12 +222,9 @@ fn (vd &ViewDrawer) can_do_scroll() (bool, bool) {
 [inline]
 fn (mut vd ViewDrawer) set_cursor() {
 	mut ta := vd.text_area
-	// ta.lines_len and ta.line_offs were set in TextArea.input_insert
-	in_index := if ta.lines_len.len > 1 {
-		lines_len_sum := arrays.sum(ta.lines_len#[..-1]) or { panic(error) }
-		5 + ta.in_text.len - ta.in_offset - lines_len_sum
-	} else {
-		5 + ta.in_text.len - ta.in_offset
-	}
-	vd.set_cur_pos(in_index, vd.in_linen + ta.line_offs)
+	// ta.lines_len were set in TextArea.input_insert
+	ind := ta.cur_line().filter(it == `\t`).len * (indent.len - 1)
+	x := 5 + ta.cur_line().len + ind - ta.in_offset
+	y := vd.in_linen + ta.how_many_lines() - 1 - ta.line_offs
+	vd.set_cur_pos(x, y)
 }
