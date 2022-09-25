@@ -21,17 +21,12 @@ fn (mut ta TextArea) input_insert(s string) {
 	}
 }
 
-fn (mut ta TextArea) should_eval () bool {
-	// TODO: handle open and close in same line
+fn (mut ta TextArea) should_eval() bool {
 	ta.ml_flags.clear()
 	ta.ml_flags << ta.in_text.filter(it in ml_clousures).map(ml_clousures[it])
-	for r in ta.in_text.reverse() {
-		if ta.ml_flags.len > 0 && r == ta.ml_flags.last() {
-			ta.ml_flags.delete_last()
-		}
-	}
-	last_rune := ta.in_text.filter(it != ` `).last()
-	if ta.ml_flags.len == 0 && last_rune !in ml_flag_chars {
+	filtered := ta.in_text.filter(it in ml_clousures.values())
+	ta.ml_flags = ta.ml_flags.filter(it !in filtered)
+	if ta.ml_flags.len == 0 {
 		return true
 	} else {
 		ta.input_insert('\n')
