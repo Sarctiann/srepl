@@ -1,8 +1,8 @@
 module main
 
 struct TextArea {
+	Prompt
 mut:
-	prompt    &Prompt = unsafe { nil }
 	fixed     bool
 	in_text   []rune
 	in_offset int
@@ -22,19 +22,22 @@ fn (mut ta TextArea) should_eval() bool {
 	for r in ta.in_text {
 		if r in ta.ml_flags {
 			ta.ml_flags.delete(ta.ml_flags.index(r))
-			if r == last_rune && ta.prompt.indent_level > 0 {
-				ta.prompt.indent_level -= 1
+			if r == last_rune && ta.indent_level > 0 {
+				ta.indent_level -= 1
 			}
 		}
 	}
 	if ta.ml_flags.len == 0 && last_rune !in ml_flag_chars {
-		ta.prompt.indent_level = 0
+		ta.indent_level = 0
 		return true
 	} else {
 		if last_rune in ml_clousures {
-			ta.prompt.indent_level += 1
+			ta.indent_level += 1
 		}
-		ta.input_insert('\n${'\t'.repeat(ta.prompt.indent_level)}')
+		// if last_rune !in ml_flag_chars && ta.indent_level > 0 {
+		// 	ta.indent_level -= 1
+		// }
+		ta.input_insert('\n${'\t'.repeat(ta.indent_level)}')
 		return false
 	}
 }
@@ -113,23 +116,23 @@ fn (mut ta TextArea) input_delete() {
 fn (ta &TextArea) colored_in() string {
 	if ta.in_text.len > 0 {
 		in_lines := ta.in_text.string().split('\n').map(highlight_input(it))
-		glue := '\n' + ta.prompt.more_colored() + ' '
-		return ta.prompt.colored() + ' ' + in_lines.join(glue)
+		glue := '\n' + ta.more_colored() + ' '
+		return ta.colored() + ' ' + in_lines.join(glue)
 	} else {
-		return ta.prompt.colored()
+		return ta.colored()
 	}
 }
 
 fn (mut ta TextArea) switch_mode() (string, THC) {
-	match ta.prompt.mode {
+	match ta.mode {
 		.normal {
-			ta.prompt.mode = .overwrite
-			ta.prompt.color = .overwrite_prompt
+			ta.mode = .overwrite
+			ta.color = .overwrite_prompt
 			return 'switched to overwrite mode', THC.msg_warn
 		}
 		.overwrite {
-			ta.prompt.mode = .normal
-			ta.prompt.color = .normal_prompt
+			ta.mode = .normal
+			ta.color = .normal_prompt
 			return 'switched to normal mode', THC.msg_info
 		}
 	}

@@ -96,7 +96,7 @@ fn (vd &ViewDrawer) draw_ui_content() {
 		sb_pos := vd.bg_info.scrollbar_pos
 		// To debug format and print the data you need !!!
 		status := if debug {
-			// mode := 'mode: $vd.text_area.prompt.mode'
+			// mode := 'mode: $vd.text_area.mode'
 			// focus := 'focus: $vd.focus'
 			// fixed := 'fixed: $vd.text_area.fixed'
 			// lineno := 'in: $vd.in_linen out: $vd.out_linen'
@@ -107,13 +107,13 @@ fn (vd &ViewDrawer) draw_ui_content() {
 			ml_flags := 'ml flags: $vd.text_area.ml_flags'
 			in_offset := 'in offset: $vd.text_area.in_offset'
 			tabs := 'tabs: ${vd.text_area.in_text.filter(it == `\t`).len * (indent.len - 1)}'
-			// ind_lev := 'ind_lev: $vd.text_area.prompt.indent_level'
+			// ind_lev := 'ind_lev: $vd.text_area.indent_level'
 
 			out_len := 'out lines len: $vd.out_text.len'
 			winsize := 'w:$vd.size.width,h:$vd.size.height'
 			'$color_in_len | $in_len | $in_offset | $ml_flags | $tabs | $out_len | $winsize'
 		} else {
-			mode := 'mode: $vd.text_area.prompt.mode'
+			mode := 'mode: $vd.text_area.mode'
 			focus := 'focus: $vd.focus'
 			fixed := 'fixed: $vd.text_area.fixed'
 			'$mode | $focus | $fixed'

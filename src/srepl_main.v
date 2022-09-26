@@ -18,13 +18,11 @@ fn new_repl(args []string) &Repl {
 	ini_fix_top := '-ft' in args
 	mut app := &Repl{
 		text_area: &TextArea{
-			prompt: &Prompt{
 				mode: ini_mode
 				color: match ini_mode {
 					.normal { THC.normal_prompt }
 					.overwrite { THC.overwrite_prompt }
 				}
-			}
 			fixed: ini_fix_top
 		}
 		prog_list: &ProgList{}
