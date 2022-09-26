@@ -10,7 +10,7 @@ fn main() {
 
 	mut repl := new_repl(args)
 
-	repl.tui.run()?
+	repl.tui.run() ?
 }
 
 fn new_repl(args []string) &Repl {
@@ -18,11 +18,11 @@ fn new_repl(args []string) &Repl {
 	ini_fix_top := '-ft' in args
 	mut app := &Repl{
 		text_area: &TextArea{
-				mode: ini_mode
-				color: match ini_mode {
-					.normal { THC.normal_prompt }
-					.overwrite { THC.overwrite_prompt }
-				}
+			mode: ini_mode
+			color: match ini_mode {
+				.normal { THC.normal_prompt }
+				.overwrite { THC.overwrite_prompt }
+			}
 			fixed: ini_fix_top
 		}
 		prog_list: &ProgList{}
@@ -143,10 +143,7 @@ fn handle_events(e &tui.Event, app voidptr) {
 					.backspace {}
 					.delete {}
 					.enter {}
-					else {
-						// TODO: handle new line on width limit
-						r.text_area.input_insert(e.utf8)
-					}
+					else {}
 				}
 			} else {
 				// TODO: handle mouse events

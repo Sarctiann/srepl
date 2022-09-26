@@ -34,67 +34,82 @@ fn (mut ta TextArea) should_eval() bool {
 		if last_rune in ml_clousures {
 			ta.indent_level += 1
 		}
-		// if last_rune !in ml_flag_chars && ta.indent_level > 0 {
-		// 	ta.indent_level -= 1
-		// }
 		ta.input_insert('\n${'\t'.repeat(ta.indent_level)}')
 		return false
 	}
 }
 
 fn (mut ta TextArea) cursor_backward(d Displacement) {
+	cur_line := ta.cur_line()
 	match d {
 		.char {
-			if ta.in_offset < ta.in_text.len {
-				ta.in_offset += 1
-			}
+			ta.handle_start_or_end_line(.more)
 		}
 		.word {
-			if ta.in_offset < ta.in_text.len {
-				ta.in_offset += 1
-			}
-			for ta.in_offset < ta.in_text.len {
-				if ta.in_text[ta.in_text.len - 1 - ta.in_offset] in word_separators {
-					ta.in_offset += 1
+			for cur_line.len - ta.in_offset > 0 {
+				if cur_line[cur_line.len - 1 - ta.in_offset] in word_separators {
+					ta.handle_start_or_end_line(.more)
 				} else {
 					break
 				}
 			}
-			for ta.in_offset < ta.in_text.len {
-				if ta.in_text[ta.in_text.len - 1 - ta.in_offset] !in word_separators {
-					ta.in_offset += 1
+			for cur_line.len - ta.in_offset > 0 {
+				if cur_line[cur_line.len - 1 - ta.in_offset] !in word_separators {
+					ta.handle_start_or_end_line(.more)
 				} else {
 					break
 				}
 			}
+			ta.handle_start_or_end_line(.more)
 		}
 	}
 }
 
 fn (mut ta TextArea) cursor_forward(d Displacement) {
+	cur_line := ta.cur_line()
 	match d {
 		.char {
-			if ta.in_offset > 0 {
-				ta.in_offset -= 1
-			}
+			ta.handle_start_or_end_line(.less)
 		}
 		.word {
+			for ta.in_offset > 0 {
+				if cur_line[cur_line.len - ta.in_offset] in word_separators {
+					ta.handle_start_or_end_line(.less)
+				} else {
+					break
+				}
+			}
+			for ta.in_offset > 0 {
+				if cur_line[cur_line.len - ta.in_offset] !in word_separators {
+					ta.handle_start_or_end_line(.less)
+				} else {
+					break
+				}
+			}
+			ta.handle_start_or_end_line(.less)
+		}
+	}
+}
+
+[inline]
+fn (mut ta TextArea) handle_start_or_end_line(a Amount) {
+	cur_line := ta.cur_line()
+	how_many_lines := ta.how_many_lines()
+	match a {
+		.more {
+			if ta.in_offset < cur_line.len {
+				ta.in_offset += 1
+			} else if ta.line_offs < how_many_lines - 1 {
+				ta.in_offset = 0
+				ta.line_offs += 1
+			}
+		}
+		.less {
 			if ta.in_offset > 0 {
 				ta.in_offset -= 1
-			}
-			for ta.in_offset > 0 {
-				if ta.in_text[ta.in_text.len - ta.in_offset] in word_separators {
-					ta.in_offset -= 1
-				} else {
-					break
-				}
-			}
-			for ta.in_offset > 0 {
-				if ta.in_text[ta.in_text.len - ta.in_offset] !in word_separators {
-					ta.in_offset -= 1
-				} else {
-					break
-				}
+			} else if how_many_lines > 1 && ta.line_offs > 0 {
+				ta.line_offs -= 1
+				ta.in_offset = ta.cur_line().len
 			}
 		}
 	}
@@ -138,12 +153,12 @@ fn (mut ta TextArea) switch_mode() (string, THC) {
 	}
 }
 
-fn (mut ta TextArea) cur_line() []rune {
+fn (ta &TextArea) cur_line() []rune {
 	lines := ta.in_text.string().split('\n')
 	return lines[lines.len - ta.line_offs - 1].runes()
 }
 
-fn (mut ta TextArea) how_many_lines() int {
+fn (ta &TextArea) how_many_lines() int {
 	return ta.in_text.string().split('\n').len
 }
 

@@ -106,12 +106,13 @@ fn (vd &ViewDrawer) draw_ui_content() {
 			in_len := 'in len: $vd.text_area.in_text.len'
 			ml_flags := 'ml flags: $vd.text_area.ml_flags'
 			in_offset := 'in offset: $vd.text_area.in_offset'
-			tabs := 'tabs: ${vd.text_area.in_text.filter(it == `\t`).len * (indent.len - 1)}'
 			// ind_lev := 'ind_lev: $vd.text_area.indent_level'
+			cur_line := 'cur line: ${vd.text_area.cur_line()}'
+			cur_line_len := 'cur line len: ${vd.text_area.cur_line().len}'
 
 			out_len := 'out lines len: $vd.out_text.len'
 			winsize := 'w:$vd.size.width,h:$vd.size.height'
-			'$color_in_len | $in_len | $in_offset | $ml_flags | $tabs | $out_len | $winsize'
+			'$color_in_len | $in_len | $in_offset | $cur_line | $cur_line_len | $ml_flags | $out_len | $winsize'
 		} else {
 			mode := 'mode: $vd.text_area.mode'
 			focus := 'focus: $vd.focus'
@@ -223,8 +224,10 @@ fn (vd &ViewDrawer) can_do_scroll() (bool, bool) {
 fn (mut vd ViewDrawer) set_cursor() {
 	mut ta := vd.text_area
 	// ta.lines_len were set in TextArea.input_insert
-	ind := ta.cur_line().filter(it == `\t`).len * (indent.len - 1)
-	x := 5 + ta.cur_line().len + ind - ta.in_offset
+	cur_line_len := ta.cur_line().len
+	tabs := ta.cur_line()[..cur_line_len - ta.in_offset]
+	ind := tabs.filter(it == `\t`).len * (indent.len - 1)
+	x := 5 + cur_line_len + ind - ta.in_offset
 	y := vd.in_linen + ta.how_many_lines() - 1 - ta.line_offs
 	vd.set_cur_pos(x, y)
 }

@@ -75,8 +75,8 @@ const (
 	d_arrow         = '\u2228'
 	frame_rate      = 30
 	indent          = '    '
-	word_separators = ' +-*/()[]{}.,'.runes() // ( on CTRL + LEFT/RIGHT events )
-	ml_flag_chars   = '[({,+-*/'.runes() // ( on ENTER event )
+	word_separators = ' +-*/()[]{}.,\t'.runes() // ( on CTRL + LEFT/RIGHT events )
+	ml_flag_chars   = ',+-*/'.runes() // ( on ENTER event )
 	ml_clousures    = {
 		`[`: `]`
 		`{`: `}`
@@ -122,4 +122,9 @@ enum Action {
 enum Displacement {
 	char
 	word
+}
+
+enum Amount {
+	less
+	more
 }
