@@ -124,7 +124,9 @@ enum Displacement {
 	word
 }
 
-enum Amount {
-	less
-	more
+enum CursorMovement {
+	back
+	forth
+	del
+	sup
 }

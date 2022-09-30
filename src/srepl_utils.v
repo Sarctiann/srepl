@@ -43,24 +43,24 @@ fn (mut ta TextArea) cursor_backward(d Displacement) {
 	cur_line := ta.cur_line()
 	match d {
 		.char {
-			ta.handle_start_or_end_line(.more)
+			ta.handle_cursor_movement(.back)
 		}
 		.word {
 			for cur_line.len - ta.in_offset > 0 {
 				if cur_line[cur_line.len - 1 - ta.in_offset] in word_separators {
-					ta.handle_start_or_end_line(.more)
+					ta.handle_cursor_movement(.back)
 				} else {
 					break
 				}
 			}
 			for cur_line.len - ta.in_offset > 0 {
 				if cur_line[cur_line.len - 1 - ta.in_offset] !in word_separators {
-					ta.handle_start_or_end_line(.more)
+					ta.handle_cursor_movement(.back)
 				} else {
 					break
 				}
 			}
-			ta.handle_start_or_end_line(.more)
+			ta.handle_cursor_movement(.back)
 		}
 	}
 }
@@ -69,34 +69,34 @@ fn (mut ta TextArea) cursor_forward(d Displacement) {
 	cur_line := ta.cur_line()
 	match d {
 		.char {
-			ta.handle_start_or_end_line(.less)
+			ta.handle_cursor_movement(.forth)
 		}
 		.word {
 			for ta.in_offset > 0 {
 				if cur_line[cur_line.len - ta.in_offset] in word_separators {
-					ta.handle_start_or_end_line(.less)
+					ta.handle_cursor_movement(.forth)
 				} else {
 					break
 				}
 			}
 			for ta.in_offset > 0 {
 				if cur_line[cur_line.len - ta.in_offset] !in word_separators {
-					ta.handle_start_or_end_line(.less)
+					ta.handle_cursor_movement(.forth)
 				} else {
 					break
 				}
 			}
-			ta.handle_start_or_end_line(.less)
+			ta.handle_cursor_movement(.forth)
 		}
 	}
 }
 
 [inline]
-fn (mut ta TextArea) handle_start_or_end_line(a Amount) {
+fn (mut ta TextArea) handle_cursor_movement(cm CursorMovement) {
 	cur_line := ta.cur_line()
 	how_many_lines := ta.how_many_lines()
-	match a {
-		.more {
+	match cm {
+		.back {
 			if ta.in_offset < cur_line.len {
 				ta.in_offset += 1
 			} else if ta.line_offs < how_many_lines - 1 {
@@ -104,7 +104,7 @@ fn (mut ta TextArea) handle_start_or_end_line(a Amount) {
 				ta.line_offs += 1
 			}
 		}
-		.less {
+		.forth {
 			if ta.in_offset > 0 {
 				ta.in_offset -= 1
 			} else if how_many_lines > 1 && ta.line_offs > 0 {
@@ -112,6 +112,7 @@ fn (mut ta TextArea) handle_start_or_end_line(a Amount) {
 				ta.in_offset = ta.cur_line().len
 			}
 		}
+		else {}
 	}
 }
 
