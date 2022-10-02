@@ -105,7 +105,7 @@ fn highlight_input(in_text string) string {
 	} else {
 		// First we need to replace the numbers and brackets in one go,
 		// since these characters are used in the terminal colorization.
-		mut re_number := re.regex_opt(r'([0-9\[\]\.]+)') or { panic(error) }
+		mut re_number := re.regex_opt(r'([0-9\[\]\.]+)') or { panic(err) }
 		first_epoch := re_number.replace_by_fn(in_text, colored_number)
 
 		// Now we split the text in words to replace the word level 1 tokens
@@ -121,7 +121,7 @@ fn highlight_input(in_text string) string {
 		// for words that can be sticked to certain tokens
 		// handle tokens between [ ]
 		sep_query := r'[\.,;:\(\)\{\}m]'
-		mut re_word_sep := re.regex_opt(sep_query) or { panic(error) }
+		mut re_word_sep := re.regex_opt(sep_query) or { panic(err) }
 		for i, word in second_epoch {
 			mut toks := re_word_sep.split(word).filter(it.len > 0)
 			if toks.len > 0 {
@@ -142,7 +142,7 @@ fn highlight_input(in_text string) string {
 		}
 
 		// Finally replace the literal strings
-		mut re_string := re.regex_opt('(["\'].*["\'])') or { panic(error) }
+		mut re_string := re.regex_opt('(["\'].*["\'])') or { panic(err) }
 		fourth_epoch := re_string.replace_by_fn(third_epoch, colored_string)
 
 		// TODO: highlight comments

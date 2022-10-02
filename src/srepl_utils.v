@@ -91,6 +91,14 @@ fn (mut ta TextArea) cursor_forward(d Displacement) {
 	}
 }
 
+fn (mut ta TextArea) input_delete() {
+	ta.handle_cursor_movement(.del)
+}
+
+fn (mut ta TextArea) input_suppress() {
+	ta.handle_cursor_movement(.sup)
+}
+
 [inline]
 fn (mut ta TextArea) handle_cursor_movement(cm CursorMovement) {
 	cur_line := ta.cur_line()
@@ -112,20 +120,25 @@ fn (mut ta TextArea) handle_cursor_movement(cm CursorMovement) {
 				ta.in_offset = ta.cur_line().len
 			}
 		}
-		else {}
-	}
-}
-
-fn (mut ta TextArea) input_remove() {
-	if ta.in_text.len - ta.in_offset > 0 {
-		ta.in_text.delete(ta.in_text.len - ta.in_offset - 1)
-	}
-}
-
-fn (mut ta TextArea) input_delete() {
-	if ta.in_offset > 0 {
-		ta.in_text.delete(ta.in_text.len - ta.in_offset)
-		ta.in_offset--
+		.del {
+			if ta.in_text.len - ta.in_offset > 0 {
+				idx := ta.in_text.len - ta.in_offset - 1
+				if ta.in_text[idx] == `\t` && ta.indent_level > 0 {
+					ta.indent_level -= 1
+				}
+				ta.in_text.delete(idx)
+			}
+		}
+		.sup {
+			if ta.in_offset > 0 {
+				idx := ta.in_text.len - ta.in_offset
+				if ta.in_text[idx] == `\t` && ta.indent_level > 0 {
+					ta.indent_level -= 1
+				}
+				ta.in_text.delete(idx)
+				ta.in_offset--
+			}
+		}
 	}
 }
 

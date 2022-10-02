@@ -105,10 +105,10 @@ fn handle_events(e &tui.Event, app voidptr) {
 						}
 					}
 					.backspace {
-						r.text_area.input_remove()
+						r.text_area.input_delete()
 					}
 					.delete {
-						r.text_area.input_delete()
+						r.text_area.input_suppress()
 					}
 					.enter {
 						r.on_press_enter()
