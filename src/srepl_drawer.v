@@ -104,7 +104,6 @@ fn (vd &ViewDrawer) draw_ui_content() {
 
 			color_in_len := 'colored in len: $vd.text_area.colored_in().len'
 			in_len := 'in len: $vd.text_area.in_text.len'
-			ml_flags := 'ml flags: $vd.text_area.ml_flags'
 			in_offset := 'in offset: $vd.text_area.in_offset'
 			// ind_lev := 'ind_lev: $vd.text_area.indent_level'
 			cur_line := 'cur line: ${vd.text_area.cur_line()}'
@@ -112,7 +111,7 @@ fn (vd &ViewDrawer) draw_ui_content() {
 
 			out_len := 'out lines len: $vd.out_text.len'
 			winsize := 'w:$vd.size.width,h:$vd.size.height'
-			'$color_in_len | $in_len | $in_offset | $cur_line | $cur_line_len | $ml_flags | $out_len | $winsize'
+			'$color_in_len | $in_len | $in_offset | $cur_line | $cur_line_len | $out_len | $winsize'
 		} else {
 			mode := 'mode: $vd.text_area.mode'
 			focus := 'focus: $vd.focus'

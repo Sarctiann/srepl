@@ -4,10 +4,9 @@ struct TextArea {
 	Prompt
 mut:
 	fixed     bool
-	in_text   []rune
+	in_text   []rune // TODO: [][]rune{len: 1, init: []rune{}}
 	in_offset int
 	line_offs int
-	ml_flags  []rune
 	in_hist   []string
 }
 
@@ -17,17 +16,16 @@ fn (mut ta TextArea) input_insert(s string) {
 
 fn (mut ta TextArea) should_eval() bool {
 	last_rune := ta.in_text.filter(it != ` `).last()
-	ta.ml_flags.clear()
-	ta.ml_flags << ta.in_text.filter(it in ml_clousures).map(ml_clousures[it]).reverse()
+	mut ml_flags := ta.in_text.filter(it in ml_clousures).map(ml_clousures[it]).reverse()
 	for r in ta.in_text {
-		if r in ta.ml_flags {
-			ta.ml_flags.delete(ta.ml_flags.index(r))
+		if r in ml_flags {
+			ml_flags.delete(ml_flags.index(r))
 			if r == last_rune && ta.indent_level > 0 {
 				ta.indent_level -= 1
 			}
 		}
 	}
-	if ta.ml_flags.len == 0 && last_rune !in ml_flag_chars {
+	if ml_flags.len == 0 && last_rune !in ml_flag_chars {
 		ta.indent_level = 0
 		return true
 	} else {
@@ -145,10 +143,10 @@ fn (mut ta TextArea) handle_cursor_movement(cm CursorMovement) {
 fn (ta &TextArea) colored_in() string {
 	if ta.in_text.len > 0 {
 		in_lines := ta.in_text.string().split('\n').map(highlight_input(it))
-		glue := '\n' + ta.more_colored() + ' '
-		return ta.colored() + ' ' + in_lines.join(glue)
+		joiner := '\n' + ta.more_prompt() + ' '
+		return ta.prompt() + ' ' + in_lines.join(joiner)
 	} else {
-		return ta.colored()
+		return ta.prompt()
 	}
 }
 
@@ -183,11 +181,11 @@ mut:
 	indent_level int
 }
 
-fn (p &Prompt) colored() string {
+fn (p &Prompt) prompt() string {
 	return colors[p.color]('>>>')
 }
 
-fn (p &Prompt) more_colored() string {
+fn (p &Prompt) more_prompt() string {
 	return colors[p.color]('...')
 }
 
