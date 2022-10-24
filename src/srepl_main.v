@@ -10,7 +10,7 @@ fn main() {
 
 	mut repl := new_repl(args)
 
-	repl.tui.run() ?
+	repl.tui.run()?
 }
 
 fn new_repl(args []string) &Repl {
@@ -72,7 +72,8 @@ fn handle_events(e &tui.Event, app voidptr) {
 			if e.typ == .key_down {
 				match e.code {
 					.escape {
-						quit(mut r)
+						r.bg_info.show_msg('To exit the repl type :exit | :quit | :x | :q',
+							THC.msg_info, 3)
 					}
 					.up {
 						if e.modifiers == .shift {

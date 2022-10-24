@@ -25,7 +25,7 @@ fn show_help(mut r Repl) {
 }
 
 fn clear(mut r Repl) {
-	r.text_area.in_text.clear()
+	r.text_area.clear()
 	r.drawer.out_text.clear()
 	r.text_area.in_offset = 0
 	r.drawer.in_linen = 1

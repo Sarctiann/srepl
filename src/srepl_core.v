@@ -31,8 +31,7 @@ fn (mut r Repl) read() {
 [inline]
 fn (mut r Repl) eval() {
 	if r.action == .eval {
-		mut ta := r.text_area
-		in_text := ta.in_text.string()
+		in_text := r.text_area.raw_string()
 		if in_text.starts_with(cpfix) {
 			// SREPL functions
 			cmd := in_text.trim(cpfix).trim_space()
@@ -96,7 +95,7 @@ fn (mut r Repl) on_press_enter() {
 		return
 	}
 	// Else, derive to evaluation or input new line
-	if r.text_area.should_eval() {
+	if r.text_area.should_eval_else_new_line() {
 		r.drawer.puts(r.text_area.colored_in().replace('\t', indent))
 		r.action = .eval
 	}
@@ -106,5 +105,5 @@ fn (mut r Repl) reset_prompt_cycle() {
 	r.text_area.in_offset = 0
 	r.text_area.line_offs = 0
 	r.drawer.out_offset = 0
-	r.text_area.in_text.clear()
+	r.text_area.clear()
 }

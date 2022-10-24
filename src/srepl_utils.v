@@ -4,24 +4,35 @@ struct TextArea {
 	Prompt
 mut:
 	fixed     bool
-	in_text   []rune // TODO: [][]rune{len: 1, init: []rune{}}
+	in_text   [][]rune = [][]rune{len: 1, init: []rune{}}
 	in_offset int
 	line_offs int
 	in_hist   []string
 }
 
 fn (mut ta TextArea) input_insert(s string) {
-	ta.in_text.insert(ta.in_text.len - ta.in_offset, s.runes())
+	ta.in_text[ta.cur_line_idx()]
+		.insert(ta.cur_line().len - ta.in_offset, s.runes())
 }
 
-fn (mut ta TextArea) should_eval() bool {
-	last_rune := ta.in_text.filter(it != ` `).last()
-	mut ml_flags := ta.in_text.filter(it in ml_clousures).map(ml_clousures[it]).reverse()
-	for r in ta.in_text {
-		if r in ml_flags {
-			ml_flags.delete(ml_flags.index(r))
-			if r == last_rune && ta.indent_level > 0 {
-				ta.indent_level -= 1
+fn (mut ta TextArea) should_eval_else_new_line() bool {
+	// TODO: handle new based on the cursor position
+	last_rune := ta.in_text[ta.cur_line_idx()].filter(it != ` `).last()
+	mut ml_flags := []rune{}
+	for line in ta.in_text {
+		for r in line {
+			if r in ml_clousures {
+				ml_flags.prepend(ml_clousures[r])
+			}
+		}
+	}
+	for line in ta.in_text {
+		for r in line {
+			if r in ml_flags {
+				ml_flags.delete(ml_flags.index(r))
+				if r == last_rune && ta.indent_level > 0 {
+					ta.indent_level -= 1
+				}
 			}
 		}
 	}
@@ -32,7 +43,10 @@ fn (mut ta TextArea) should_eval() bool {
 		if last_rune in ml_clousures {
 			ta.indent_level += 1
 		}
-		ta.input_insert('\n${'\t'.repeat(ta.indent_level)}')
+		temp := ta.cur_line()[ta.cur_line().len - ta.in_offset..]
+		ta.in_text << []rune{}
+		ta.in_text[ta.cur_line_idx()] << temp
+		ta.input_insert('\t'.repeat(ta.indent_level))
 		return false
 	}
 }
@@ -100,7 +114,7 @@ fn (mut ta TextArea) input_suppress() {
 [inline]
 fn (mut ta TextArea) handle_cursor_movement(cm CursorMovement) {
 	cur_line := ta.cur_line()
-	how_many_lines := ta.how_many_lines()
+	how_many_lines := ta.in_text.len
 	match cm {
 		.back {
 			if ta.in_offset < cur_line.len {
@@ -119,18 +133,22 @@ fn (mut ta TextArea) handle_cursor_movement(cm CursorMovement) {
 			}
 		}
 		.del {
-			if ta.in_text.len - ta.in_offset > 0 {
-				idx := ta.in_text.len - ta.in_offset - 1
-				if ta.in_text[idx] == `\t` && ta.indent_level > 0 {
+			if ta.cur_line().len - ta.in_offset > 0 {
+				idx := ta.cur_line().len - ta.in_offset - 1
+				if ta.cur_line()[idx] == `\t` && ta.indent_level > 0 {
 					ta.indent_level -= 1
 				}
-				ta.in_text.delete(idx)
+				ta.in_text[ta.cur_line_idx()].delete(idx)
+			} else if ta.in_text.len > 1 && ta.line_offs < ta.in_text.len - 1 {
+				ta.in_text[ta.cur_line_idx() - 1] << ta.cur_line()
+				ta.in_text.delete(ta.cur_line_idx())
 			}
 		}
 		.sup {
+			// FIXME
 			if ta.in_offset > 0 {
 				idx := ta.in_text.len - ta.in_offset
-				if ta.in_text[idx] == `\t` && ta.indent_level > 0 {
+				if ta.in_text[ta.line_offs][idx] == `\t` && ta.indent_level > 0 {
 					ta.indent_level -= 1
 				}
 				ta.in_text.delete(idx)
@@ -142,7 +160,7 @@ fn (mut ta TextArea) handle_cursor_movement(cm CursorMovement) {
 
 fn (ta &TextArea) colored_in() string {
 	if ta.in_text.len > 0 {
-		in_lines := ta.in_text.string().split('\n').map(highlight_input(it))
+		in_lines := ta.in_text.map(highlight_input(it.string()))
 		joiner := '\n' + ta.more_prompt() + ' '
 		return ta.prompt() + ' ' + in_lines.join(joiner)
 	} else {
@@ -166,12 +184,19 @@ fn (mut ta TextArea) switch_mode() (string, THC) {
 }
 
 fn (ta &TextArea) cur_line() []rune {
-	lines := ta.in_text.string().split('\n')
-	return lines[lines.len - ta.line_offs - 1].runes()
+	return ta.in_text[ta.cur_line_idx()]
 }
 
-fn (ta &TextArea) how_many_lines() int {
-	return ta.in_text.string().split('\n').len
+fn (ta &TextArea) cur_line_idx() int {
+	return ta.in_text.len - 1 - ta.line_offs
+}
+
+fn (ta &TextArea) raw_string() string {
+	return ta.in_text.map(it.string()).join('\n')
+}
+
+fn (mut ta TextArea) clear() {
+	ta.in_text = [][]rune{len: 1, init: []rune{}}
 }
 
 struct Prompt {

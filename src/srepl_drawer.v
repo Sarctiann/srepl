@@ -107,11 +107,12 @@ fn (vd &ViewDrawer) draw_ui_content() {
 			in_offset := 'in offset: $vd.text_area.in_offset'
 			// ind_lev := 'ind_lev: $vd.text_area.indent_level'
 			cur_line := 'cur line: ${vd.text_area.cur_line()}'
-			cur_line_len := 'cur line len: ${vd.text_area.cur_line().len}'
+			// cur_line_len := 'cur line len: ${vd.text_area.cur_line().len}'
+			hml := 'how many lines: ${vd.text_area.in_text.len}'
 
 			out_len := 'out lines len: $vd.out_text.len'
 			winsize := 'w:$vd.size.width,h:$vd.size.height'
-			'$color_in_len | $in_len | $in_offset | $cur_line | $cur_line_len | $out_len | $winsize'
+			'$color_in_len | $in_len | $cur_line | $in_offset | $hml | $out_len | $winsize'
 		} else {
 			mode := 'mode: $vd.text_area.mode'
 			focus := 'focus: $vd.focus'
@@ -227,6 +228,6 @@ fn (mut vd ViewDrawer) set_cursor() {
 	tabs := ta.cur_line()[..cur_line_len - ta.in_offset]
 	ind := tabs.filter(it == `\t`).len * (indent.len - 1)
 	x := 5 + cur_line_len + ind - ta.in_offset
-	y := vd.in_linen + ta.how_many_lines() - 1 - ta.line_offs
+	y := vd.in_linen + ta.cur_line_idx()
 	vd.set_cur_pos(x, y)
 }
