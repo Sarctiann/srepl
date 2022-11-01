@@ -32,7 +32,7 @@ fn clear(mut r Repl) {
 	r.drawer.out_linen = 1
 }
 
-fn quit(mut r Repl) {
+fn quit(mut _ Repl) {
 	println('')
 	exit(0)
 }

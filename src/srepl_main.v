@@ -79,12 +79,14 @@ fn handle_events(e &tui.Event, app voidptr) {
 						if e.modifiers == .shift {
 							r.drawer.scroll_up()
 						} else {
+							// TODO
 						}
 					}
 					.down {
 						if e.modifiers == .shift {
 							r.drawer.scroll_down()
 						} else {
+							// TODO
 						}
 					}
 					.left {

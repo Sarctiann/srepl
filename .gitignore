@@ -1,6 +1,7 @@
 # Binaries for programs and plugins
 main
 srepl
+bin
 vls.log
 *.exe
 *.exe~
@@ -8,3 +9,4 @@ vls.log
 *.dylib
 *.dll
 *.code-workspace
+.idea

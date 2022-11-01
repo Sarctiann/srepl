@@ -106,9 +106,9 @@ fn (vd &ViewDrawer) draw_ui_content() {
 			in_len := 'in len: $vd.text_area.in_text.len'
 			in_offset := 'in offset: $vd.text_area.in_offset'
 			// ind_lev := 'ind_lev: $vd.text_area.indent_level'
-			cur_line := 'cur line: ${vd.text_area.cur_line()}'
+			cur_line := 'cur line: $vd.text_area.cur_line()'
 			// cur_line_len := 'cur line len: ${vd.text_area.cur_line().len}'
-			hml := 'how many lines: ${vd.text_area.in_text.len}'
+			hml := 'how many lines: $vd.text_area.in_text.len'
 
 			out_len := 'out lines len: $vd.out_text.len'
 			winsize := 'w:$vd.size.width,h:$vd.size.height'

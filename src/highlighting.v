@@ -150,13 +150,13 @@ fn highlight_input(in_text string) string {
 	}
 }
 
-fn colored_number(re re.RE, text string, start int, end int) string {
+fn colored_number(re re.RE, text string, _ int, _ int) string {
 	g := re.get_group_by_id(text, 0)
 	color := if g in ['[', ']', '[]'] { THC.parentesis } else { THC.number }
 	return colors[color](g)
 }
 
-fn colored_string(re re.RE, text string, start int, end int) string {
+fn colored_string(re re.RE, text string, _ int, _ int) string {
 	g := re.get_group_by_id(text, 0)
 	return colors[._string](g)
 }
