@@ -4,13 +4,20 @@ import os
 import rand
 import os.cmdline
 import term.ui as tui
+import readline { read_line_utf8 }
 
 fn main() {
-	args := cmdline.options_after(os.args, ['./srepl', 'srepl'])
+	// args := cmdline.options_after(os.args, ['./srepl', 'srepl'])
+	//
+	// mut repl := new_repl(args)
+	//
+	// repl.tui.run()?
 
-	mut repl := new_repl(args)
-
-	repl.tui.run()?
+	mut input := [[]rune{}]
+	for input[0] != 'exit\n'.runes() {
+		input[0] = read_line_utf8('>>> ')!
+		dump(input)
+	}
 }
 
 fn new_repl(args []string) &Repl {
@@ -27,7 +34,7 @@ fn new_repl(args []string) &Repl {
 		}
 		prog_list: &ProgList{}
 		repl_data: &ReplData{
-			srepl_folder: 'srepl-$rand.ulid()'
+			srepl_folder: 'srepl-${rand.ulid()}'
 			files: {
 				'main': 'main.v'
 			}
