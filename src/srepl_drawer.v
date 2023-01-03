@@ -66,7 +66,7 @@ fn (mut vd ViewDrawer) draw() {
 
 	// draw bg_info.msg
 	if bgi.msg_text != '' {
-		msg := colors[bgi.msg_color](bgi.msg_text)
+		msg := colors[(bgi.msg_color)](bgi.msg_text)
 		vd.draw_text(1, vd.in_linen + 1, msg)
 	}
 
@@ -102,22 +102,22 @@ fn (vd &ViewDrawer) draw_ui_content() {
 			// lineno := 'in: $vd.in_linen out: $vd.out_linen'
 			// sbp := 'sbp: $sb_pos'
 
-			color_in_len := 'colored in len: $vd.text_area.colored_in().len'
-			in_len := 'in len: $vd.text_area.in_text.len'
-			in_offset := 'in offset: $vd.text_area.in_offset'
+			color_in_len := 'colored in len: ${vd.text_area.colored_in().len}'
+			in_len := 'in len: ${vd.text_area.in_text.len}'
+			in_offset := 'in offset: ${vd.text_area.in_offset}'
 			// ind_lev := 'ind_lev: $vd.text_area.indent_level'
-			cur_line := 'cur line: $vd.text_area.cur_line()'
+			cur_line := 'cur line: ${vd.text_area.cur_line()}'
 			// cur_line_len := 'cur line len: ${vd.text_area.cur_line().len}'
-			hml := 'how many lines: $vd.text_area.in_text.len'
+			hml := 'how many lines: ${vd.text_area.in_text.len}'
 
-			out_len := 'out lines len: $vd.out_text.len'
-			winsize := 'w:$vd.size.width,h:$vd.size.height'
-			'$color_in_len | $in_len | $cur_line | $in_offset | $hml | $out_len | $winsize'
+			out_len := 'out lines len: ${vd.out_text.len}'
+			winsize := 'w:${vd.size.width},h:${vd.size.height}'
+			'${color_in_len} | ${in_len} | ${cur_line} | ${in_offset} | ${hml} | ${out_len} | ${winsize}'
 		} else {
-			mode := 'mode: $vd.text_area.mode'
-			focus := 'focus: $vd.focus'
-			fixed := 'fixed: $vd.text_area.fixed'
-			'$mode | $focus | $fixed'
+			mode := 'mode: ${vd.text_area.mode}'
+			focus := 'focus: ${vd.focus}'
+			fixed := 'fixed: ${vd.text_area.fixed}'
+			'${mode} | ${focus} | ${fixed}'
 		}
 		x := (vd.size.width - status.len) / 2
 		vd.draw_text(x, vd.size.height, status)
@@ -162,8 +162,8 @@ fn (mut vd ViewDrawer) puts(lines ...string) {
 fn (mut vd ViewDrawer) handle_change_size() {
 	mut ws := vd.size
 	if ws.width != ws.new_w || ws.height != ws.new_h {
-		ws.width = ws.new_w
-		ws.height = ws.new_h
+		ws.width = *ws.new_w
+		ws.height = *ws.new_h
 		if ws.width > 109 {
 			vd.bg_info.scrollbar_pos = ws.width - ws.width / 4 - 1
 		} else {

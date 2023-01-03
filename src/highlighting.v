@@ -112,7 +112,7 @@ fn highlight_input(in_text string) string {
 		mut second_epoch := first_epoch.split(' ')
 		second_epoch = second_epoch.map(if it in word_level1_tokens {
 			t := word_level1_tokens[it]
-			colors[t](it)
+			colors[(t)](it)
 		} else {
 			it
 		})
@@ -123,12 +123,12 @@ fn highlight_input(in_text string) string {
 		sep_query := r'[\.,;:\(\)\{\}m]'
 		mut re_word_sep := re.regex_opt(sep_query) or { panic(err) }
 		for i, word in second_epoch {
-			mut toks := re_word_sep.split(word).filter(it.len > 0)
+			toks := re_word_sep.split(word).filter(it.len > 0)
 			if toks.len > 0 {
 				for tok in toks {
 					if tok in word_level2_tokens {
 						t := word_level2_tokens[tok]
-						colored := second_epoch[i].replace(tok, colors[t](tok))
+						colored := second_epoch[i].replace(tok, colors[(t)](tok))
 						second_epoch[i] = colored
 					}
 				}
@@ -138,7 +138,7 @@ fn highlight_input(in_text string) string {
 		// Now join them into a string and replace the char level tokens
 		mut third_epoch := second_epoch.join(' ')
 		for k, v in char_level_tokens {
-			third_epoch = third_epoch.replace(k, colors[v](k))
+			third_epoch = third_epoch.replace(k, colors[(v)](k))
 		}
 
 		// Finally replace the literal strings
@@ -153,7 +153,7 @@ fn highlight_input(in_text string) string {
 fn colored_number(re re.RE, text string, _ int, _ int) string {
 	g := re.get_group_by_id(text, 0)
 	color := if g in ['[', ']', '[]'] { THC.parentesis } else { THC.number }
-	return colors[color](g)
+	return colors[(color)](g)
 }
 
 fn colored_string(re re.RE, text string, _ int, _ int) string {

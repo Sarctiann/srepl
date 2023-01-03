@@ -27,7 +27,7 @@ fn new_repl(args []string) &Repl {
 		}
 		prog_list: &ProgList{}
 		repl_data: &ReplData{
-			srepl_folder: 'srepl-$rand.ulid()'
+			srepl_folder: 'srepl-${rand.ulid()}'
 			files: {
 				'main': 'main.v'
 			}

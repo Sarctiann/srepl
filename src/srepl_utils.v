@@ -207,11 +207,11 @@ mut:
 }
 
 fn (p &Prompt) prompt() string {
-	return colors[p.color]('>>>')
+	return colors[(p.color)]('>>>')
 }
 
 fn (p &Prompt) more_prompt() string {
-	return colors[p.color]('...')
+	return colors[(p.color)]('...')
 }
 
 struct BGInfo {
