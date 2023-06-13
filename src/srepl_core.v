@@ -36,7 +36,7 @@ fn (mut r Repl) eval() {
 			// SREPL functions
 			cmd := in_text.trim(cpfix).trim_space()
 			if cmd in functions {
-				functions[(cmd)](mut r)
+				unsafe { functions[cmd](mut r) }
 			} else {
 				result := 'Unknown command ${colors[.msg_error](cmd)}'
 				r.drawer.puts(result)

@@ -66,7 +66,7 @@ fn new_repl(args []string) &Repl {
 }
 
 fn handle_events(e &tui.Event, app voidptr) {
-	mut r := &Repl(app)
+	mut r := unsafe { &Repl(app) }
 	match r.focus {
 		.text_area {
 			if e.typ == .key_down {
@@ -156,7 +156,7 @@ fn handle_events(e &tui.Event, app voidptr) {
 }
 
 fn each_frame(app voidptr) {
-	mut r := &Repl(app)
+	mut r := unsafe { &Repl(app) }
 
 	r.on_cycle_start()
 	r.read()

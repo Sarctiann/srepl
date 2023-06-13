@@ -66,7 +66,7 @@ fn (mut vd ViewDrawer) draw() {
 
 	// draw bg_info.msg
 	if bgi.msg_text != '' {
-		msg := colors[(bgi.msg_color)](bgi.msg_text)
+		msg := colors[bgi.msg_color](bgi.msg_text)
 		vd.draw_text(1, vd.in_linen + 1, msg)
 	}
 
@@ -84,7 +84,7 @@ fn (mut vd ViewDrawer) draw() {
 fn (vd &ViewDrawer) draw_ui_bg() {
 	if vd.size.width > 109 {
 		sbp := vd.bg_info.scrollbar_pos
-		vd.set_bg_color(*custom_colors[.ui_bg_elem])
+		vd.set_bg_color(custom_colors[.ui_bg_elem])
 		vd.draw_line(sbp, 1, sbp, vd.size.height)
 		vd.draw_line(1, vd.size.height, vd.size.width, vd.size.height)
 	}

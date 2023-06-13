@@ -20,24 +20,24 @@ const (
 		'save':  's' // save accumulated program
 	}
 	colors = {
-		THC.normal_prompt:    &term.blue
-		THC.overwrite_prompt: &term.magenta
-		THC.msg_info:         &term.cyan
-		THC.msg_warn:         &term.yellow
-		THC.msg_error:        &term.bright_red
-		THC.repl_fn:          &term.bright_green
-		THC.keyword:          &term.bright_magenta
-		THC.operator:         &term.red
-		THC.parentesis:       &term.blue
-		THC._type:            &term.bright_cyan
-		THC.modifier:         &term.magenta
-		THC.assign:           &term.bright_yellow
-		THC.number:           &term.yellow
-		THC._string:          &term.green
-		THC.arrows:           &term.bright_yellow
+		THC.normal_prompt:    term.blue
+		THC.overwrite_prompt: term.magenta
+		THC.msg_info:         term.cyan
+		THC.msg_warn:         term.yellow
+		THC.msg_error:        term.bright_red
+		THC.repl_fn:          term.bright_green
+		THC.keyword:          term.bright_magenta
+		THC.operator:         term.red
+		THC.parentesis:       term.blue
+		THC._type:            term.bright_cyan
+		THC.modifier:         term.magenta
+		THC.assign:           term.bright_yellow
+		THC.number:           term.yellow
+		THC._string:          term.green
+		THC.arrows:           term.bright_yellow
 	}
 	custom_colors = {
-		THC.ui_bg_elem: &tui.Color{
+		THC.ui_bg_elem: tui.Color{
 			r: 90
 			g: 90
 			b: 90
